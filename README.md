@@ -1,3 +1,6 @@
+# Original code
+The starting point of this project was the code from https://github.com/Holzhaus/serato-tags
+
 # Serato Tags
 
 This repository aims to document the GEOB ID3 tags that the Serato DJ software uses to store its metadata.
