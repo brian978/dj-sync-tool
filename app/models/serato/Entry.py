@@ -36,7 +36,7 @@ class Entry(object):
             data=', '.join('{}={!r}'.format(name, getattr(self, name)) for name in self.FIELDS)
         )
 
-    def add_hot_cue(self, position: int, color: str):
+    def set_hot_cue(self, position: int, color: str):
         setattr(self, 'start_position_set', True)
         setattr(self, 'start_position', position)
         setattr(self, 'type', EntryType.CUE)

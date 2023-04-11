@@ -4,11 +4,12 @@ import struct
 import mutagen
 
 from app.models.MusicFile import MusicFile
+from app.readers.ReaderInterface import ReaderInterface
 from app.readers.serato.media.Color import Color
 from app.readers.serato.media.Entry import Entry
 
 
-class GEOBReader:
+class GEOBReader(ReaderInterface):
     FMT_VERSION = 'BB'
 
     def __init__(self, files):

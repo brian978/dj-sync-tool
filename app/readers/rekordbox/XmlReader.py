@@ -2,11 +2,11 @@ from datetime import datetime
 import os.path
 from xml.dom import minidom
 
-from app.models.MusicFile import MusicFile
 from app.models.rekordbox.Track import Track
+from app.readers.ReaderInterface import ReaderInterface
 
 
-class XmlReader:
+class XmlReader(ReaderInterface):
     __path = ''
 
     def __init__(self, path):
