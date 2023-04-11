@@ -4,3 +4,5 @@ reader = XmlReader(path='var/rekordbox.xml')
 
 files = reader.read()
 
+print(files)
+
