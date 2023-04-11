@@ -8,9 +8,5 @@ class ColorModel(EntryModel):
     FMT = 'c3s'
     FIELDS = ('field1', 'color',)
 
-    @classmethod
-    def load(cls, data):
-        return cls(*struct.unpack(cls.FMT, data))
-
     def dump(self):
         return struct.pack(self.FMT, *(getattr(self, f) for f in self.FIELDS))
