@@ -11,8 +11,6 @@ from app.services.marker.BaseWriterService import BaseWriterService
 from mutagen import id3
 from mutagen import File as MutagenFile
 
-from app.utils.colors import rgb_to_hex
-
 
 class MarkerWriterService(BaseWriterService):
     @classmethod
@@ -100,7 +98,6 @@ class MarkerWriterService(BaseWriterService):
                 continue
 
             entry.set_name(hot_cue.name)
-            entry.lock()
             entry_found = True
 
         if not entry_found:

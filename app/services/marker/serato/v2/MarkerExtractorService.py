@@ -5,11 +5,7 @@ import struct
 import mutagen
 
 from app.models.MusicFile import MusicFile
-from app.models.serato.ColorModel import ColorModel
-from app.models.serato.EntryModel import EntryModel
-from app.models.serato.EntryType import EntryType
 from app.services.marker.BaseExtractorService import BaseExtractorService
-from app.utils.colors import rgb_to_hex
 from app.utils.serato import read_bytes
 from app.utils.serato.type_detector import detect_type
 
@@ -36,9 +32,6 @@ class MarkerExtractorService(BaseExtractorService):
 
         entries = list(self.__parse(data))
 
-        if len(entries) == 0:
-            entries = self.__create_empty_entries()
-
         return entries
 
     def __parse(self, data: list):
@@ -60,36 +53,3 @@ class MarkerExtractorService(BaseExtractorService):
             assert entry_len > 0
 
             yield detect_type(entry_name).deserialize(fp.read(entry_len))
-
-    def __create_empty_entries(self):
-        entries = []
-        for item in range(0, 15):
-            if item <= 4:
-                entry = self.create_empty(EntryType.INVALID)
-            elif item == 14:
-                entry = self.create_empty_color()
-            else:
-                entry = self.create_empty(EntryType.LOOP)
-
-            entries.append(entry)
-
-        return entries
-
-    @staticmethod
-    def create_empty_color():
-        return ColorModel(*[
-            bytes.fromhex(rgb_to_hex(255, 255, 255)),
-        ])
-
-    @staticmethod
-    def create_empty(entry_type: EntryType):
-        return EntryModel(*[
-            False,
-            None,
-            False,
-            None,
-            b'\x00\x7f\x7f\x7f\x7f\x7f',
-            bytes.fromhex(rgb_to_hex(0, 0, 0)),
-            entry_type,
-            0
-        ])

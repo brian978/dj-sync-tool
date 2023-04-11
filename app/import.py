@@ -8,11 +8,14 @@ from app.services.marker.serato.v2.MarkerWriterService import MarkerWriterServic
 reader = XmlReader(path='var/rekordbox.xml')
 
 file_manager = FileManagerService(reader)
+
+# Serato Markers_
 file_manager.add_extractor(MarkerExtractorService())
-file_manager.add_extractor(MarkerExtractorServiceV2())
 file_manager.add_writer(MarkerWriterService())
+
+# Serato Markers2
+file_manager.add_extractor(MarkerExtractorServiceV2())
 file_manager.add_writer(MarkerWriterServiceV2())
 
-files = file_manager.find_all()
-
-file_manager.write_tags(files)
+# Save to files
+file_manager.write_tags(file_manager.find_all())

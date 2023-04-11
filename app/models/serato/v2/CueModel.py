@@ -7,8 +7,7 @@ from app.models.serato.v2.BaseEntryModel import BaseEntryModel
 class CueModel(BaseEntryModel):
     NAME = 'CUE'
     FMT = '>cBIc3s2s'
-    FIELDS = ('field1', 'index', 'position', 'field4', 'color', 'field6',
-              'name',)
+    FIELDS = ('field1', 'index', 'position', 'field4', 'color', 'field6', 'name',)
 
     @classmethod
     def from_hot_cue(cls, hot_cue: HotCue):
