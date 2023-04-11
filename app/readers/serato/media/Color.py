@@ -1,4 +1,4 @@
-from app.models.serato.ColorEntry import ColorEntry as ColorModel
+from app.models.serato.ColorEntry import ColorEntry
 from .Entry import Entry
 
 
@@ -8,4 +8,4 @@ class Color(Entry):
 
     @classmethod
     def model(cls):
-        return ColorModel
+        return ColorEntry

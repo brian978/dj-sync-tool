@@ -4,7 +4,7 @@ from app.models.serato.EntryType import EntryType
 from app.utils.serato.encoder import encode
 
 
-class Entry(object):
+class PlainEntry(object):
     FMT = '>B4sB4s6s4sBB'
     FIELDS = (
         'start_position_set',

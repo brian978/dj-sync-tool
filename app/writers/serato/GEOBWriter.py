@@ -4,7 +4,7 @@ from app.models.HotCue import HotCue
 from app.models.HotCueType import HotCueType
 from app.models.MusicFile import MusicFile
 from app.models.serato.ColorEntry import ColorEntry
-from app.models.serato.Entry import Entry
+from app.models.serato.PlainEntry import PlainEntry
 from app.models.serato.EntryType import EntryType
 from app.readers.ReaderInterface import ReaderInterface
 from app.readers.serato.GEOBReader import GEOBReader
@@ -88,7 +88,7 @@ class GEOBWriter:
 
     @staticmethod
     def create_empty(entry_type: EntryType):
-        return Entry(*[
+        return PlainEntry(*[
             False,
             None,
             False,

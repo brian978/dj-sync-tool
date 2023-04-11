@@ -1,6 +1,6 @@
-from app.models.serato.Entry import Entry
+from app.models.serato.PlainEntry import PlainEntry
 
 
-class ColorEntry(Entry):
+class ColorEntry(PlainEntry):
     FMT = '>4s'
     FIELDS = ('color',)
