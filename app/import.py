@@ -1,12 +1,14 @@
 from app.readers.rekordbox.XmlReader import XmlReader
-from app.readers.serato.GEOBReader import GEOBReader
-from app.writers.serato.GEOBWriter import GEOBWriter
+from app.services.FileManagerService import FileManagerService
+from app.services.marker.serato.MarkerExtractorService import MarkerExtractorService
+from app.services.marker.serato.MarkerWriterService import MarkerWriterService
 
 reader = XmlReader(path='var/rekordbox.xml')
-writer = GEOBWriter(reader)
 
-writer.create_entries()
-writer.export()
+file_manager = FileManagerService(reader)
+file_manager.add_extractor(MarkerExtractorService())
+file_manager.add_writer(MarkerWriterService())
 
-geob_reader = GEOBReader(reader.read())
-final = geob_reader.read()
+files = file_manager.find_all()
+
+file_manager.write_tags(files)

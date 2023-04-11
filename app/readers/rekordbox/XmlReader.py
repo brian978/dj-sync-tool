@@ -1,4 +1,3 @@
-from datetime import datetime
 import os.path
 from xml.dom import minidom
 
@@ -7,8 +6,6 @@ from app.readers.ReaderInterface import ReaderInterface
 
 
 class XmlReader(ReaderInterface):
-    __path = ''
-
     def __init__(self, path):
         self.__path = os.path.abspath(path)
 
