@@ -4,18 +4,15 @@ from app.models.HotCue import HotCue
 
 
 class MusicFile:
-    trackID = ''
-    averageBpm = ''
-    dateAdded = ''
-    playCount = ''
-    location = ''
-    tonality = ''
-
-    hot_cues = []
-    __markers = {}
-
     def __init__(self, path: str):
         self.location = os.path.abspath(path.replace('file://localhost', ''))
+        self.trackID = ''
+        self.averageBpm = ''
+        self.dateAdded = ''
+        self.playCount = ''
+        self.tonality = ''
+        self.hot_cues = []
+        self.__markers = {}
 
     def add_hot_cue(self, hot_cue: HotCue):
         self.hot_cues.append(hot_cue)

@@ -30,9 +30,7 @@ class MarkerExtractorService(BaseExtractorService):
             with open(raw_file, mode='rb') as fp:
                 data = fp.read()
 
-        entries = list(self.__parse(data))
-
-        return entries
+        return list(self.__parse(data))
 
     def __parse(self, data: list):
         version_len = struct.calcsize(self.FMT_VERSION)

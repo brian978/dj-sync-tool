@@ -1,5 +1,6 @@
 import urllib.parse
 from datetime import datetime
+from xml.dom.minidom import Element
 
 from app.models.HotCue import HotCue
 from app.models.HotCueType import HotCueType
@@ -29,23 +30,25 @@ class Track:
         return self.__track.attributes[name].value
 
     def __hot_cues(self):
-        cues = self.__track.getElementsByTagName("POSITION_MARK")
-        for xml_cue in cues:
+        for node in self.__track.childNodes:
+            if not isinstance(node, Element) or node.nodeName != 'POSITION_MARK':
+                continue
+
             # figure out a way to have a pool of indexes so that we will the remaining
             # hot cues with memory cues (if available)
-            index = int(xml_cue.attributes["Num"].value)
-            cue_type = self.__cue_type(index, xml_cue)
+            index = int(node.attributes["Num"].value)
+            cue_type = self.__cue_type(index, node)
 
             hot_cue = HotCue()
             hot_cue.type = cue_type
-            hot_cue.name = xml_cue.attributes["Name"].value
-            hot_cue.start = int(float(xml_cue.attributes["Start"].value) * 1000)  # need value in milliseconds
+            hot_cue.name = node.attributes["Name"].value
+            hot_cue.start = int(float(node.attributes["Start"].value) * 1000)  # need value in milliseconds
             hot_cue.index = index
-            hot_cue.color = self.__cue_color(cue_type, xml_cue)
+            hot_cue.color = self.__cue_color(cue_type, node)
 
             # Only loops have an "End" attribute
             if cue_type == HotCueType.LOOP:
-                hot_cue.end = int(float(xml_cue.attributes["End"].value) * 1000)  # need value in milliseconds
+                hot_cue.end = int(float(node.attributes["End"].value) * 1000)  # need value in milliseconds
 
             yield hot_cue
 
