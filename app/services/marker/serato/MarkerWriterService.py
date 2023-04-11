@@ -58,7 +58,6 @@ class MarkerWriterService(BaseWriterService):
             if hot_cue.type != HotCueType.LOOP:
                 continue
 
-            entry.lock()
             entry.set_cue_loop(
                 hot_cue.start,
                 hot_cue.end
