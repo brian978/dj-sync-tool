@@ -19,16 +19,7 @@ class XmlReader:
         files = []
         for xml_track in tracks:
             track = Track(xml_track)
-            music_file = MusicFile(track.attr("Location"))
-            music_file.trackID = track.attr("TrackID")
-            music_file.averageBpm = track.attr("AverageBpm")
-            music_file.dateAdded = datetime.strptime(track.attr("DateAdded"), '%Y-%m-%d')
-            music_file.playCount = track.attr("PlayCount")
-            music_file.tonality = track.attr("Tonality")
 
-            for hot_cue in track.hot_cues():
-                music_file.add_hot_cue(hot_cue)
-
-            files.append(music_file)
+            files.append(track.decode())
 
         return files
