@@ -35,12 +35,18 @@ class EntryModel(object):
         raise NotImplementedError(f"Method not implemented in {cls}")
 
     def set_hot_cue(self, position: int, color: str):
+        if self.locked():
+            return
+
         setattr(self, 'start_position_set', True)
         setattr(self, 'start_position', position)
         setattr(self, 'type', EntryType.CUE)
         setattr(self, 'color', bytes.fromhex(color))
 
     def set_cue_loop(self, position_start: int, position_end: int):
+        if self.locked():
+            return
+        
         setattr(self, 'start_position_set', True)
         setattr(self, 'start_position', position_start)
         setattr(self, 'end_position_set', True)
@@ -53,6 +59,9 @@ class EntryModel(object):
 
     def unlock(self):
         setattr(self, 'is_locked', 0)
+
+    def locked(self):
+        return getattr(self, 'is_locked') == 1
 
     def dump(self):
         entry_data = []

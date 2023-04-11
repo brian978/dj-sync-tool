@@ -26,6 +26,9 @@ class LoopModel(BaseEntryModel):
         ])
 
     def set_cue_loop(self, position_start: int, position_end: int):
+        if self.locked():
+            return
+
         setattr(self, 'startposition', position_start)
         setattr(self, 'endposition', position_end)
         setattr(self, 'color', 0)
@@ -38,6 +41,9 @@ class LoopModel(BaseEntryModel):
 
     def unlock(self):
         setattr(self, 'locked', False)
+
+    def locked(self):
+        return getattr(self, 'locked') == True
 
     def dump(self):
         struct_fields = self.FIELDS[:-1]

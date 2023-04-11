@@ -16,6 +16,9 @@ class BaseEntryModel(EntryModel):
     def lock(self):
         pass
 
+    def locked(self):
+        pass
+
     def get_index(self):
         return int(getattr(self, "index", -99))
 
