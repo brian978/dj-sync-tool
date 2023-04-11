@@ -1,8 +1,8 @@
 from app.models.serato.ColorModel import ColorModel
-from .Entry import Entry
+from .EntrySerializer import EntrySerializer
 
 
-class Color(Entry):
+class ColorSerializer(EntrySerializer):
     FMT = '>4s'
     FIELDS = ('color',)
     MODEL = ColorModel

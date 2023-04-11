@@ -5,7 +5,7 @@ from app.models.serato.EntryModel import EntryModel
 from app.utils.serato.encoder import decode
 
 
-class Entry(object):
+class EntrySerializer(object):
     MODEL = EntryModel
 
     @classmethod
