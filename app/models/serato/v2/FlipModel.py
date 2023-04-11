@@ -1,9 +1,9 @@
 import struct
 
-from app.models.serato.EntryModel import EntryModel
+from app.models.serato.v2.BaseEntryModel import BaseEntryModel
 
 
-class FlipModel(EntryModel):
+class FlipModel(BaseEntryModel):
     NAME = 'FLIP'
     FMT1 = 'cB?'
     FMT2 = '>BI'

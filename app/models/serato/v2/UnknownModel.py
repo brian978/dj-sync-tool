@@ -1,6 +1,6 @@
-from app.models.serato.EntryModel import EntryModel
+from app.models.serato.v2.BaseEntryModel import BaseEntryModel
 
 
-class UnknownModel(EntryModel):
+class UnknownModel(BaseEntryModel):
     NAME = None
     FIELDS = ('data',)

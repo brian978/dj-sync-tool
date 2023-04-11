@@ -18,8 +18,8 @@ class MarkerWriterService(BaseWriterService):
 
         entries = file.get_markers(self.source_name())
 
-        self.write_hot_cues(file.hot_cues, entries)
-        self.write_cue_loops(file.hot_cues, entries)
+        self.write_hot_cues(file.hot_cues.copy(), entries)
+        self.write_cue_loops(file.hot_cues.copy(), entries)
         self.__save(file, entries)
 
     @staticmethod

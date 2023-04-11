@@ -17,14 +17,6 @@ class EntryModel(object):
         'is_locked'
     )
 
-    @classmethod
-    def format(cls):
-        return cls.FMT
-
-    @classmethod
-    def fields(cls):
-        return cls.FIELDS
-
     def __init__(self, *args):
         assert len(args) == len(self.FIELDS)
         for field, value in zip(self.FIELDS, args):

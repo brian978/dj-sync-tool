@@ -1,9 +1,9 @@
 import struct
 
-from app.models.serato.EntryModel import EntryModel
+from app.models.serato.v2.BaseEntryModel import BaseEntryModel
 
 
-class LoopModel(EntryModel):
+class LoopModel(BaseEntryModel):
     NAME = 'LOOP'
     FMT = '>cBII4s4sB?'
     FIELDS = ('field1', 'index', 'startposition', 'endposition', 'field5', 'field6', 'color', 'locked', 'name',)

@@ -8,8 +8,6 @@ from app.models.MusicFile import MusicFile
 from app.models.serato.ColorModel import ColorModel
 from app.models.serato.EntryModel import EntryModel
 from app.models.serato.EntryType import EntryType
-from app.serializers.serato.ColorSerializer import ColorSerializer
-from app.serializers.serato.EntrySerializer import EntrySerializer
 from app.services.marker.BaseExtractorService import BaseExtractorService
 from app.utils.colors import rgb_to_hex
 from app.utils.serato import read_bytes
