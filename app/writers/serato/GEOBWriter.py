@@ -3,8 +3,8 @@ import struct
 from app.models.HotCue import HotCue
 from app.models.HotCueType import HotCueType
 from app.models.MusicFile import MusicFile
-from app.models.serato.ColorEntry import ColorEntry
-from app.models.serato.PlainEntry import PlainEntry
+from app.models.serato.ColorModel import ColorModel
+from app.models.serato.EntryModel import EntryModel
 from app.models.serato.EntryType import EntryType
 from app.readers.ReaderInterface import ReaderInterface
 from app.readers.serato.GEOBReader import GEOBReader
@@ -82,13 +82,13 @@ class GEOBWriter:
 
     @staticmethod
     def create_empty_color():
-        return ColorEntry(*[
+        return ColorModel(*[
             bytes.fromhex(rgb_to_hex(255, 255, 255)),
         ])
 
     @staticmethod
     def create_empty(entry_type: EntryType):
-        return PlainEntry(*[
+        return EntryModel(*[
             False,
             None,
             False,

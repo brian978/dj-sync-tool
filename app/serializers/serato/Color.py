@@ -1,8 +1,8 @@
-from app.models.serato.ColorEntry import ColorEntry
+from app.models.serato.ColorModel import ColorModel
 from .Entry import Entry
 
 
 class Color(Entry):
     FMT = '>4s'
     FIELDS = ('color',)
-    MODEL = ColorEntry
+    MODEL = ColorModel

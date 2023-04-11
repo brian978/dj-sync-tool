@@ -1,12 +1,12 @@
 import struct
 
 from app.models.serato.EntryType import EntryType
-from app.models.serato.PlainEntry import PlainEntry
+from app.models.serato.EntryModel import EntryModel
 from app.utils.serato.encoder import decode
 
 
 class Entry(object):
-    MODEL = PlainEntry
+    MODEL = EntryModel
 
     @classmethod
     def deserialize(cls, data):
