@@ -21,7 +21,7 @@ class LoopModel(BaseEntryModel):
             b'\xff\xff\xff\xff',
             b"\x00'\xaa\xe1",
             0,
-            False,
+            True,
             hot_cue.name
         ])
 
@@ -32,6 +32,12 @@ class LoopModel(BaseEntryModel):
 
     def set_name(self, name: str):
         setattr(self, 'name', name)
+
+    def lock(self):
+        setattr(self, 'locked', True)
+
+    def unlock(self):
+        setattr(self, 'locked', False)
 
     def dump(self):
         struct_fields = self.FIELDS[:-1]

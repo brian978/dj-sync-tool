@@ -1,3 +1,5 @@
+import warnings
+
 from app.models.serato.EntryModel import EntryModel
 
 
@@ -9,7 +11,10 @@ class BaseEntryModel(EntryModel):
         raise NotImplementedError("The V2 markers do not support `set_cue_loop`")
 
     def set_name(self, name: str):
-        raise NotImplementedError("The `set_name` is not supported by all models")
+        pass
+
+    def lock(self):
+        pass
 
     def get_index(self):
         return int(getattr(self, "index", -99))

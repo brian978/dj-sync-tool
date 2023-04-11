@@ -1,5 +1,6 @@
 import struct
 
+from app.models.HotCue import HotCue
 from app.models.serato.EntryType import EntryType
 from app.utils.serato.encoder import encode
 
@@ -27,6 +28,11 @@ class EntryModel(object):
             name=self.__class__.__name__,
             data=', '.join('{}={!r}'.format(name, getattr(self, name)) for name in self.FIELDS)
         )
+
+    @classmethod
+    def from_hot_cue(cls, hot_cue: HotCue):
+        assert isinstance(hot_cue, HotCue)
+        raise NotImplementedError(f"Method not implemented in {cls}")
 
     def set_hot_cue(self, position: int, color: str):
         setattr(self, 'start_position_set', True)

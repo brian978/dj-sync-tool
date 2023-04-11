@@ -4,6 +4,7 @@ import struct
 from app.models.HotCue import HotCue
 from app.models.HotCueType import HotCueType
 from app.models.MusicFile import MusicFile
+from app.models.serato.v2.BaseEntryModel import BaseEntryModel
 from app.models.serato.v2.CueModel import CueModel
 from app.models.serato.v2.LoopModel import LoopModel
 from app.services.marker.BaseWriterService import BaseWriterService
@@ -27,52 +28,21 @@ class MarkerWriterService(BaseWriterService):
         self.write_cue_loops(file.hot_cues.copy(), entries)
         self.__save(file, entries)
 
-    @staticmethod
-    def write_hot_cues(hot_cues: list, entries: list) -> None:
+    def write_hot_cues(self, hot_cues: list, entries: list) -> None:
         for hot_cue in hot_cues:
             assert isinstance(hot_cue, HotCue)
             if hot_cue.type != HotCueType.CUE:
                 continue
 
-            entry_found = False
-            for entry in entries:
-                if not isinstance(entry, CueModel):
-                    continue
+            self.__write_cue_name(CueModel, hot_cue, entries)
 
-                idx = entry.get_index()
-                if hot_cue.index != idx:
-                    continue
-
-                entry.set_name(hot_cue.name)
-                entry_found = True
-
-            if not entry_found:
-                # Create new entry
-                entries.append(CueModel.from_hot_cue(hot_cue))
-
-
-    @staticmethod
-    def write_cue_loops(hot_cues: list, entries: list) -> None:
+    def write_cue_loops(self, hot_cues: list, entries: list) -> None:
         for hot_cue in hot_cues:
             assert isinstance(hot_cue, HotCue)
             if hot_cue.type != HotCueType.LOOP:
                 continue
 
-            entry_found = False
-            for entry in entries:
-                if not isinstance(entry, LoopModel):
-                    continue
-
-                idx = entry.get_index()
-                if hot_cue.index != idx:
-                    continue
-
-                entry.set_name(hot_cue.name)
-                entry_found = True
-
-            if not entry_found:
-                # Create new entry
-                entries.append(LoopModel.from_hot_cue(hot_cue))
+            self.__write_cue_name(LoopModel, hot_cue, entries)
 
     def __save(self, file: MusicFile, entries: list):
         tagfile = MutagenFile(file.location)
@@ -117,3 +87,22 @@ class MarkerWriterService(BaseWriterService):
         data = version
         data += payload_base64
         return data.ljust(470, b'\x00')
+
+    @staticmethod
+    def __write_cue_name(model: type[BaseEntryModel], hot_cue: HotCue, entries: list):
+        entry_found = False
+        for entry in entries:
+            if not isinstance(entry, model):
+                continue
+
+            idx = entry.get_index()
+            if hot_cue.index != idx:
+                continue
+
+            entry.set_name(hot_cue.name)
+            entry.lock()
+            entry_found = True
+
+        if not entry_found:
+            # Create new entry
+            entries.append(model.from_hot_cue(hot_cue))
