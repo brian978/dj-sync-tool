@@ -36,11 +36,19 @@ class Entry(object):
             data=', '.join('{}={!r}'.format(name, getattr(self, name)) for name in self.FIELDS)
         )
 
-    def add_hot_cue(self, entry_type: EntryType, position: int, color: str):
+    def add_hot_cue(self, position: int, color: str):
         setattr(self, 'start_position_set', True)
         setattr(self, 'start_position', position)
-        setattr(self, 'type', entry_type)
+        setattr(self, 'type', EntryType.CUE)
         setattr(self, 'color', bytes.fromhex(color))
+
+    def set_cue_loop(self, position_start: int, position_end: int):
+        setattr(self, 'start_position_set', True)
+        setattr(self, 'start_position', position_start)
+        setattr(self, 'end_position_set', True)
+        setattr(self, 'end_position', position_end)
+        setattr(self, 'type', EntryType.LOOP)
+        setattr(self, 'color', bytes.fromhex("27AAE1"))
 
     def lock(self):
         setattr(self, 'is_locked', 1)

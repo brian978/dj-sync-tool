@@ -19,7 +19,6 @@ class XmlReader:
         files = []
         for xml_track in tracks:
             track = Track(xml_track)
-
             files.append(track.decode())
 
         return files
