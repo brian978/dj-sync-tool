@@ -1,6 +1,13 @@
 # Original code
 The starting point of this project was the code from https://github.com/Holzhaus/serato-tags
 
+# How to use
+1. Make sure you have Python 3.11 installed on your computer
+2. Export the rekordbox.xml file from Rekordbox and place it into a `var/` folder right at the root of the project
+3. **Make a backup of your music files**
+4. Run `make install`
+5. Run `make`
+
 # Serato Tags
 
 This repository aims to document the GEOB ID3 tags that the Serato DJ software uses to store its metadata.
