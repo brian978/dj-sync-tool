@@ -1,6 +1,6 @@
 from app.models.serato.PlainEntry import PlainEntry
 
 
-class UnknownPlainEntry(PlainEntry):
+class UnknownEntry(PlainEntry):
     NAME = None
     FIELDS = ('data',)

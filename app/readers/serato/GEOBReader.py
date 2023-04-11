@@ -5,8 +5,8 @@ import mutagen
 
 from app.models.MusicFile import MusicFile
 from app.readers.ReaderInterface import ReaderInterface
-from app.readers.serato.media.Color import Color
-from app.readers.serato.media.Entry import Entry
+from app.serializers.serato.Color import Color
+from app.serializers.serato.Entry import Entry
 
 
 class GEOBReader(ReaderInterface):
@@ -45,7 +45,7 @@ class GEOBReader(ReaderInterface):
             entry_data = fp.read(0x16)
             assert len(entry_data) == 0x16
 
-            entry = Entry.load(entry_data)
+            entry = Entry.deserialize(entry_data)
             yield entry
 
-        yield Color.load(fp.read())
+        yield Color.deserialize(fp.read())

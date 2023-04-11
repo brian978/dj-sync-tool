@@ -6,13 +6,11 @@ from app.utils.serato.encoder import decode
 
 
 class Entry(object):
-    @classmethod
-    def model(cls):
-        return PlainEntry
+    MODEL = PlainEntry
 
     @classmethod
-    def load(cls, data):
-        model = cls.model()
+    def deserialize(cls, data):
+        model = cls.MODEL
 
         info_size = struct.calcsize(model.FMT)
         info = struct.unpack(model.FMT, data[:info_size])
