@@ -1,3 +1,4 @@
+import urllib.parse
 from datetime import datetime
 
 from app.models.HotCue import HotCue
@@ -12,7 +13,7 @@ class Track:
         self.__track = track
 
     def decode(self):
-        music_file = MusicFile(self.__attr("Location"))
+        music_file = MusicFile(urllib.parse.unquote(self.__attr("Location")))
         music_file.trackID = self.__attr("TrackID")
         music_file.averageBpm = float(self.__attr("AverageBpm"))
         music_file.dateAdded = datetime.strptime(self.__attr("DateAdded"), '%Y-%m-%d')

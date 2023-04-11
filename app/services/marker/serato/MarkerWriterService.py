@@ -68,6 +68,8 @@ class MarkerWriterService(BaseWriterService):
         tagfile = MutagenFile(file.location)
         data = self.__dump(entries)
 
+        print(f"Dumping {self.source_name()} for file {file.location}")
+
         if tagfile is not None:
             tagfile[self.source_name()] = id3.GEOB(
                 encoding=0,
