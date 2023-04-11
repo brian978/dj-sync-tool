@@ -1,4 +1,7 @@
+import struct
+
 from app.models.serato.EntryType import EntryType
+from app.utils.serato.encoder import encode
 
 
 class Entry(object):
@@ -14,6 +17,14 @@ class Entry(object):
         'is_locked'
     )
 
+    @classmethod
+    def format(cls):
+        return cls.FMT
+
+    @classmethod
+    def fields(cls):
+        return cls.FIELDS
+
     def __init__(self, *args):
         assert len(args) == len(self.FIELDS)
         for field, value in zip(self.FIELDS, args):
@@ -25,11 +36,40 @@ class Entry(object):
             data=', '.join('{}={!r}'.format(name, getattr(self, name)) for name in self.FIELDS)
         )
 
-    def add_hot_cue(self, position, color):
+    def add_hot_cue(self, entry_type: EntryType, position: int, color: str):
         setattr(self, 'start_position_set', True)
         setattr(self, 'start_position', position)
-        setattr(self, 'type', EntryType.CUE)
+        setattr(self, 'type', entry_type)
         setattr(self, 'color', bytes.fromhex(color))
 
-    def set_start_position(self, value):
-        setattr(self, 'start_position', value)
+    def lock(self):
+        setattr(self, 'is_locked', 1)
+
+    def unlock(self):
+        setattr(self, 'is_locked', 0)
+
+    def dump(self):
+        entry_data = []
+        for field in self.FIELDS:
+            value = getattr(self, field)
+            if field == 'start_position_set':
+                value = 0x7F if not value else 0x00
+            elif field == 'end_position_set':
+                value = 0x7F if not value else 0x00
+            elif field == 'color':
+                value = encode(value)
+            elif field == 'start_position':
+                if value is None:
+                    value = 0x7F7F7F7F.to_bytes(4, 'big')
+                else:
+                    value = encode(struct.pack('>I', value)[1:])
+            elif field == 'end_position':
+                if value is None:
+                    value = 0x7F7F7F7F.to_bytes(4, 'big')
+                else:
+                    value = encode(struct.pack('>I', value)[1:])
+            elif field == 'type':
+                value = int(value)
+            entry_data.append(value)
+
+        return struct.pack(self.FMT, *entry_data)

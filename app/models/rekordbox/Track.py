@@ -35,17 +35,17 @@ class Track:
             hot_cue = HotCue()
             hot_cue.type = cue_type
             hot_cue.name = xml_cue.attributes["Name"].value
-            hot_cue.start = float(xml_cue.attributes["Start"].value) * 1000  # need value in milliseconds
+            hot_cue.start = int(float(xml_cue.attributes["Start"].value) * 1000)  # need value in milliseconds
             hot_cue.index = int(xml_cue.attributes["Num"].value)
             hot_cue.color = [
-                xml_cue.attributes["Red"].value,
-                xml_cue.attributes["Green"].value,
-                xml_cue.attributes["Blue"].value
+                int(xml_cue.attributes["Red"].value),
+                int(xml_cue.attributes["Green"].value),
+                int(xml_cue.attributes["Blue"].value)
             ]
 
             # Only loops have an "End" attribute
             if cue_type == HotCueType.LOOP:
-                hot_cue.end = float(xml_cue.attributes["End"].value) * 1000  # need value in milliseconds
+                hot_cue.end = int(float(xml_cue.attributes["End"].value) * 1000)  # need value in milliseconds
 
             yield hot_cue
 
