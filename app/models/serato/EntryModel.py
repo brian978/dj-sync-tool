@@ -64,6 +64,9 @@ class EntryModel(object):
     def locked(self):
         return getattr(self, 'is_locked') == 1
 
+    def is_empty(self):
+        return getattr(self, 'type') == EntryType.INVALID
+
     def dump(self):
         entry_data = []
         for field in self.FIELDS:

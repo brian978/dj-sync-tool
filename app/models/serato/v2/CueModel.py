@@ -19,7 +19,7 @@ class CueModel(BaseEntryModel):
             hot_cue.index,
             hot_cue.start,
             b'\x00',
-            bytes.fromhex(hot_cue.hex_color()),
+            bytes.fromhex(ColorMap.to_serato(hot_cue.hex_color())),
             b'\x00\x00',
             hot_cue.name
         ])
