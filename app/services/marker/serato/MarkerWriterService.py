@@ -7,6 +7,8 @@ from app.services.marker.BaseWriterService import BaseWriterService
 from mutagen import id3
 from mutagen import File as MutagenFile
 
+from models.serato.EntryModel import EntryModel
+
 
 class MarkerWriterService(BaseWriterService):
     def source_name(self):
@@ -37,8 +39,7 @@ class MarkerWriterService(BaseWriterService):
 
                 entry.set_hot_cue(hot_cue.start, hot_cue.hex_color())
 
-    @staticmethod
-    def write_cue_loops(hot_cues: list, entries: list) -> None:
+    def write_cue_loops(self, hot_cues: list, entries: list) -> None:
         """
         Loops will be created on the next 5 (05 - 13)
         """
@@ -55,6 +56,11 @@ class MarkerWriterService(BaseWriterService):
                 continue
 
             entry.set_cue_loop(hot_cue.start, hot_cue.end)
+
+            # Copy over the cue loop start to an empty hot cue (if any)
+            empty_cue_entry = self.__find_empty_hot_cue(hot_cue.index, entries)
+            if empty_cue_entry is not None:
+                empty_cue_entry.set_hot_cue(hot_cue.start, hot_cue.hex_color())
 
     def __save(self, file: MusicFile, entries: list):
         tagfile = MutagenFile(file.location)
@@ -82,3 +88,12 @@ class MarkerWriterService(BaseWriterService):
             data += entry_data.dump()
 
         return data
+
+    @staticmethod
+    def __find_empty_hot_cue(position: int, entries: list):
+        for idx, entry in enumerate(entries):
+            if idx > 4:
+                break
+
+            if idx == position and entry.is_empty():
+                return entry

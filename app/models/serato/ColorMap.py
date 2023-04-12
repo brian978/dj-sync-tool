@@ -14,6 +14,7 @@ class ColorMap:
         "B4BE04": "8DC63F",
         "C3AF04": "FAC313",
         "E0641B": "DB4E27",
+        "FF8C00": "DB4E27",  # some orange that somehow was not detected by the palette
         "E62828": "C02626",
         "FF127B": "C71136"
     }
@@ -31,5 +32,3 @@ class ColorMap:
     @classmethod
     def to_serato(cls, color: str):
         return cls.map[color.upper()]
-
-

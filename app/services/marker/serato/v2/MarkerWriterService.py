@@ -42,6 +42,11 @@ class MarkerWriterService(BaseWriterService):
 
             self.__write_cue_name(LoopModel, hot_cue, entries)
 
+            # Copy over the cue loop start to an empty hot cue (if any)
+            if not self.__cue_exists(hot_cue.index, entries):
+                # Create new entry
+                entries.append(CueModel.from_hot_cue(hot_cue))
+
     def __save(self, file: MusicFile, entries: list):
         tagfile = MutagenFile(file.location)
         data = self.__dump(entries)
@@ -87,6 +92,17 @@ class MarkerWriterService(BaseWriterService):
         data = version
         data += payload_base64
         return data.ljust(470, b'\x00')
+
+    @staticmethod
+    def __cue_exists(position: int, entries: list):
+        for idx, entry in enumerate(entries):
+            if not isinstance(entry, CueModel):
+                continue
+
+            if entry.get_index() == position:
+                return True
+
+        return False
 
     @staticmethod
     def __write_cue_name(model: type[BaseEntryModel], hot_cue: HotCue, entries: list):
