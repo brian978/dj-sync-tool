@@ -3,6 +3,7 @@ import struct
 from app.models.HotCue import HotCue
 from app.models.serato.EntryType import EntryType
 from app.utils.serato.encoder import encode
+from models.serato.ColorMap import ColorMap
 
 
 class EntryModel(object):
@@ -41,7 +42,7 @@ class EntryModel(object):
         setattr(self, 'start_position_set', True)
         setattr(self, 'start_position', position)
         setattr(self, 'type', EntryType.CUE)
-        setattr(self, 'color', bytes.fromhex(color))
+        setattr(self, 'color', bytes.fromhex(ColorMap.to_serato(color)))
 
     def set_cue_loop(self, position_start: int, position_end: int):
         if self.locked():
