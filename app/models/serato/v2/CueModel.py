@@ -2,6 +2,7 @@ import struct
 
 from app.models.HotCue import HotCue
 from app.models.serato.v2.BaseEntryModel import BaseEntryModel
+from models.serato.ColorMap import ColorMap
 
 
 class CueModel(BaseEntryModel):
@@ -25,7 +26,7 @@ class CueModel(BaseEntryModel):
 
     def set_hot_cue(self, position: int, color: str):
         setattr(self, 'position', position / 100)
-        setattr(self, 'color', bytes.fromhex(color))
+        setattr(self, 'color', bytes.fromhex(ColorMap.to_serato(color)))
 
     def set_name(self, name: str):
         setattr(self, 'name', name)

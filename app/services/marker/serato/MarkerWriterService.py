@@ -4,7 +4,6 @@ from app.models.HotCue import HotCue
 from app.models.HotCueType import HotCueType
 from app.models.MusicFile import MusicFile
 from app.services.marker.BaseWriterService import BaseWriterService
-from app.utils.colors import rgb_to_hex
 from mutagen import id3
 from mutagen import File as MutagenFile
 
@@ -36,10 +35,7 @@ class MarkerWriterService(BaseWriterService):
                 if hot_cue.index != idx or hot_cue.type != HotCueType.CUE:
                     continue
 
-                entry.set_hot_cue(
-                    hot_cue.start,
-                    rgb_to_hex(hot_cue.color[0], hot_cue.color[1], hot_cue.color[2])
-                )
+                entry.set_hot_cue(hot_cue.start, hot_cue.hex_color())
 
     @staticmethod
     def write_cue_loops(hot_cues: list, entries: list) -> None:
@@ -58,10 +54,7 @@ class MarkerWriterService(BaseWriterService):
             if hot_cue.type != HotCueType.LOOP:
                 continue
 
-            entry.set_cue_loop(
-                hot_cue.start,
-                hot_cue.end
-            )
+            entry.set_cue_loop(hot_cue.start, hot_cue.end)
 
     def __save(self, file: MusicFile, entries: list):
         tagfile = MutagenFile(file.location)
