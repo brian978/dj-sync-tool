@@ -5,7 +5,7 @@ from app.models.serato.v2.BaseEntryModel import BaseEntryModel
 
 class BpmLockModel(BaseEntryModel):
     NAME = 'BPMLOCK'
-    FIELDS = ('enabled',)
+    FIELDS = ('is_locked', 'type')
     FMT = '?'
 
     def dump(self):

@@ -1,31 +1,31 @@
 import struct
 
 from app.models.HotCue import HotCue
+from app.models.serato.EntryType import EntryType
 from app.models.serato.v2.BaseEntryModel import BaseEntryModel
-from models.serato.ColorMap import ColorMap
+from app.models.serato.ColorMap import ColorMap
 
 
 class CueModel(BaseEntryModel):
     NAME = 'CUE'
     FMT = '>cBIc3s2s'
-    FIELDS = ('field1', 'index', 'position', 'field4', 'color', 'field6', 'name',)
+    FIELDS = ('index', 'start_position', 'color', 'is_locked', 'name', 'type')
 
     @classmethod
     def from_hot_cue(cls, hot_cue: HotCue):
         assert isinstance(hot_cue, HotCue)
 
         return cls(*[
-            b'\x00',
             hot_cue.index,
             hot_cue.start,
-            b'\x00',
             bytes.fromhex(ColorMap.to_serato(hot_cue.hex_color())),
-            b'\x00\x00',
-            hot_cue.name
+            b'\x00',
+            hot_cue.name,
+            EntryType.CUE
         ])
 
     def set_hot_cue(self, position: int, color: str):
-        setattr(self, 'position', position / 100)
+        setattr(self, 'start_position', position / 100)
         setattr(self, 'color', bytes.fromhex(ColorMap.to_serato(color)))
 
     def set_name(self, name: str):
