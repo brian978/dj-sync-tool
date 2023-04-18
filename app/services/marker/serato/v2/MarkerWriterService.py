@@ -1,6 +1,4 @@
-import base64
-import struct
-
+from app.decoders.serato.mp3.v2.Mp3Decoder import Mp3Decoder
 from app.decoders.serato.mp4.v2.Mp4Decoder import Mp4Decoder
 from app.models.HotCue import HotCue
 from app.models.HotCueType import HotCueType
@@ -17,10 +15,6 @@ from app.serializers.serato.v2.ColorSerializer import ColorSerializer
 from app.serializers.serato.v2.CueSerializer import CueSerializer
 from app.serializers.serato.v2.LoopSerializer import LoopSerializer
 from app.services.marker.BaseWriterService import BaseWriterService
-from mutagen import id3
-from mutagen import File as MutagenFile
-
-from app.utils.serato import split_string
 
 
 class MarkerWriterService(BaseWriterService):
@@ -37,14 +31,15 @@ class MarkerWriterService(BaseWriterService):
         self.write_cue_loops(file.cue_loops.copy(), entries)
 
         # Simulating the behavior of Serato which keeps the entries in the order of the index
-        entries = [
-            self.__find_color_model(entries),
-            *self.__find_storable_models(entries, CueModel),
-            *self.__find_storable_models(entries, LoopModel),
-            self.__find_bpm_lock_model(entries)
-        ]
+        if len(entries):
+            entries = [
+                self.__find_color_model(entries),
+                *self.__find_storable_models(entries, CueModel),
+                *self.__find_storable_models(entries, LoopModel),
+                self.__find_bpm_lock_model(entries)
+            ]
 
-        self.__save(file, entries)
+        self.__save(file, list(filter(lambda item: item is not None, entries)))
 
     @staticmethod
     def __find_storable_models(entries: list, model_type: type[BaseEntryModel]):
@@ -105,17 +100,12 @@ class MarkerWriterService(BaseWriterService):
 
         if file.location.lower().endswith(".m4a"):
             decoder = Mp4Decoder('----:com.serato.dj:markers')
-            mutagen_file = decoder.encode(music_file=file, entries=entries)
-            mutagen_file.tags.save(file.location)
+            mutagen_file = decoder.encode(music_file=file, entries=entries).tags
         else:
-            tagfile = MutagenFile(file.location)
-            tagfile[self.source_name()] = id3.GEOB(
-                encoding=0,
-                mime='application/octet-stream',
-                desc='Serato Markers2',
-                data=data,
-            )
-            tagfile.save()
+            decoder = Mp3Decoder("GEOB:Serato Markers2")
+            mutagen_file = decoder.encode(music_file=file, entries=entries)
+
+        mutagen_file.save(file.location)
 
     def __save(self, file: MusicFile, entries: list):
         self.__write_tag(file, list(self.__serialize(entries)))
@@ -142,39 +132,6 @@ class MarkerWriterService(BaseWriterService):
                     break
 
             yield serializer.serialize(entry_model)
-
-    def __dump(self, entries) -> bytes:
-        if len(entries) == 0:
-            return b'\x00'
-
-        version = struct.pack(self.FMT_VERSION, 0x01, 0x01)
-
-        contents = [version]
-        for entry in entries:
-            if entry.NAME is None:
-                contents.append(entry.dump())
-            else:
-                data = entry.dump()
-                contents.append(b''.join((
-                    entry.NAME.encode('utf-8'),
-                    b'\x00',
-                    struct.pack('>I', len(data)),
-                    data,
-                )))
-
-        payload = b''.join(contents)
-        payload_base64 = bytearray(base64.b64encode(payload).replace(b'=', b'A'))
-
-        i = 72
-        while i < len(payload_base64):
-            payload_base64.insert(i, 0x0A)
-            i += 73
-
-        data = version
-        data += payload_base64
-        data = data.ljust(470, b'\x00')
-
-        return data
 
     @staticmethod
     def __cue_exists(position: int, entries: list):

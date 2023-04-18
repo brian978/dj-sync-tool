@@ -1,5 +1,6 @@
 import struct
 
+from app.decoders.serato.mp3.v1.Mp3Decoder import Mp3Decoder
 from app.decoders.serato.mp4.v1.Mp4Decoder import Mp4Decoder
 from app.models.HotCue import HotCue
 from app.models.HotCueType import HotCueType
@@ -9,8 +10,6 @@ from app.models.serato.EntryType import EntryType
 from app.serializers.serato.ColorSerializer import ColorSerializer
 from app.serializers.serato.EntrySerializer import EntrySerializer
 from app.services.marker.BaseWriterService import BaseWriterService
-from mutagen import id3
-from mutagen import File as MutagenFile
 
 
 class MarkerWriterService(BaseWriterService):
@@ -80,17 +79,12 @@ class MarkerWriterService(BaseWriterService):
         print(f"Dumping {self.source_name()} for file {file.location}")
         if file.location.lower().endswith(".m4a"):
             decoder = Mp4Decoder('----:com.serato.dj:markers')
-            mutagen_file = decoder.encode(music_file=file, entries=entries)
-            mutagen_file.tags.save(file.location)
+            mutagen_file = decoder.encode(music_file=file, entries=entries).tags
         else:
-            tagfile = MutagenFile(file.location)
-            tagfile[self.source_name()] = id3.GEOB(
-                encoding=0,
-                mime='application/octet-stream',
-                desc='Serato Markers_',
-                data=data,
-            )
-            tagfile.save()
+            decoder = Mp3Decoder("GEOB:Serato Markers_")
+            mutagen_file = decoder.encode(music_file=file, entries=entries)
+
+        mutagen_file.save(file.location)
 
     def __save(self, file: MusicFile, entries: list):
         self.__write_tag(file, list(self.__serialize(entries)))

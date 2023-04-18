@@ -2,11 +2,8 @@ import base64
 import io
 import os
 import struct
-from typing import Generator
 
-import mutagen
-from mutagen.mp4 import MP4
-
+from app.decoders.serato.mp3.v2.Mp3Decoder import Mp3Decoder
 from app.decoders.serato.mp4.v2.Mp4Decoder import Mp4Decoder
 from app.models.MusicFile import MusicFile
 from app.models.serato.EntryData import EntryData
@@ -38,23 +35,14 @@ class MarkerExtractorService(BaseExtractorService):
         filepath = file.location
         filename, file_extension = os.path.splitext(filepath)
         entries = []
-
         match file_extension:
             case '.m4a':
                 decoder = Mp4Decoder('----:com.serato.dj:markersv2')
                 data = decoder.decode(music_file=file)
 
             case '.mp3':
-                tagfile = mutagen.File(filepath)
-                if tagfile is not None:
-                    try:
-                        data = tagfile[self.source_name()].data
-                    except KeyError:
-                        print('File is missing "GEOB:Serato Markers2" tag')
-                        return list()
-                else:
-                    with open(filepath, mode='rb') as fp:
-                        data = fp.read()
+                decoder = Mp3Decoder("GEOB:Serato Markers2")
+                data = decoder.decode(music_file=file)
 
             case _:
                 raise TypeError(f"Extension {file_extension} is invalid!")
