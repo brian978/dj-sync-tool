@@ -16,6 +16,28 @@
     end_position has a different value than the default only for loops
 
 
+## Empty EntryModel (mp3)
+    CUE
+    EntryModel(start_position_set=False, start_position=None, end_position_set=False, end_position=None, field5=b'\x00\x7f\x7f\x7f\x7f\x7f', color=b'\x00\x00\x00', type=<EntryType.INVALID: 0>, is_locked=False)
+
+    LOOP
+    EntryModel(start_position_set=False, start_position=None, end_position_set=False, end_position=None, field5=b'\x00\x7f\x7f\x7f\x7f\x7f', color=b'\x00\x00\x00', type=<EntryType.LOOP: 3>, is_locked=False)
+
+    COLOR
+    ColorModel(color=b'\xff\xff\xff', type=<EntryType.COLOR: 90>)
+
+
+## Empty EntryModel (mp4)
+    CUE
+    EntryModel(start_position_set=False, start_position=4294967295, end_position_set=False, end_position=4294967295, field5=None, color=b'\x00\x00\x00', type=<EntryType.CUE: 1>, is_locked=False)
+
+    LOOP
+    EntryModel(start_position_set=False, start_position=4294967295, end_position_set=False, end_position=4294967295, field5=None, color=b'\x00\x00\x00', type=<EntryType.LOOP: 3>, is_locked=False)
+
+    COLOR
+    ColorModel(color=b'\x00\xff\xff\xff', type=<EntryType.COLOR: 90>)
+
+
 # V2 Tags
     STUCTURE                                    >B      c       I                   I               5s                      3s              >B      ?       
     NAME    NULL    STRUCT LEN          NULL    INDEX   POS START           POS END         SOMETHING               COLOR                   LOCKED  NAME        NULL
