@@ -65,8 +65,7 @@ class Mp4Decoder(BaseDecoder):
         data = split_string(self._pad_payload(base64.b64encode(payload)))
         filepath = music_file.location
         mutagen_file = MutagenFile(filepath)
-        tags = mutagen_file.tags
-        tags[self.TAG_NAME][0] = MP4FreeForm(data)
+        mutagen_file[self.TAG_NAME] = MP4FreeForm(data)
 
         return mutagen_file
 
@@ -149,11 +148,10 @@ class Mp4Decoder(BaseDecoder):
 
         return obj
 
-    @staticmethod
-    def _dump_cue_entry(entry_data: EntryData) -> tuple:
+    def _dump_cue_entry(self, entry_data: EntryData) -> tuple:
         return (
-            entry_data.get('start_position'),
-            entry_data.get('end_position'),
+            self._parse_position(entry_data.get('start_position')),
+            self._parse_position(entry_data.get('end_position')),
             b'\x00',
             b'\xff\xff\xff\xff',
             b'\x00',
@@ -163,5 +161,16 @@ class Mp4Decoder(BaseDecoder):
         )
 
     @staticmethod
+    def _parse_position(value):
+        if value is None:
+            value = 4294967295
+
+        return value
+
+    @staticmethod
     def _dump_color_entry(entry_data: EntryData) -> tuple:
-        return (entry_data.get('color'),)
+        color = entry_data.get('color')
+        if len(color) < 4:
+            color = color.rjust(4, b'\x00')
+
+        return (color,)

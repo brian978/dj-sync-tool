@@ -5,6 +5,7 @@ from app.decoders.serato.mp4.v1.Mp4Decoder import Mp4Decoder
 from app.models.HotCue import HotCue
 from app.models.HotCueType import HotCueType
 from app.models.MusicFile import MusicFile
+from app.models.serato.ColorModel import ColorModel
 from app.models.serato.EntryModel import EntryModel
 from app.models.serato.EntryType import EntryType
 from app.serializers.serato.ColorSerializer import ColorSerializer
@@ -20,6 +21,12 @@ class MarkerWriterService(BaseWriterService):
         assert isinstance(file, MusicFile)
 
         entries = file.get_markers(self.source_name())
+
+        if len(entries) == 0:
+            """
+            Serato always creates all v1 entries, so if we have none we need to create them as empty
+            """
+            entries = self._create_empty_entries()
 
         self.write_hot_cues(file.hot_cues.copy(), entries)
         self.write_cue_loops(file.cue_loops.copy(), entries)
@@ -102,11 +109,37 @@ class MarkerWriterService(BaseWriterService):
 
             yield serializer.serialize(entry_model)
 
-    def __dump(self, entries) -> bytes:
-        data = struct.pack(self.FMT_VERSION, 0x02, 0x05)
-        num_entries = len(entries) - 1
-        data += struct.pack('>I', num_entries)
-        for entry_data in entries:
-            data += entry_data.dump()
+    @staticmethod
+    def _create_empty_cue_entry(entry_type: EntryType):
+        return EntryModel(*[
+            False,
+            None,
+            False,
+            None,
+            b'\x00\x7f\x7f\x7f\x7f\x7f',
+            b'\x00\x00\x00',
+            entry_type,
+            False
+        ])
 
-        return data
+    @staticmethod
+    def _create_empty_color_entry():
+        return ColorModel(*[
+            b'\xff\xff\xff',
+            EntryType.COLOR
+        ])
+
+    def _create_empty_entries(self):
+        entries = []
+
+        for i in range(14):
+            if i < 4:
+                entry_type = EntryType.CUE
+            else:
+                entry_type = EntryType.LOOP
+
+            entries.append(self._create_empty_cue_entry(entry_type))
+
+        entries.append(self._create_empty_color_entry())
+
+        return entries
