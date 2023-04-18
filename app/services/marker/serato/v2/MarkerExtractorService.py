@@ -1,10 +1,17 @@
 import base64
 import io
+import os
 import struct
 
-import mutagen
-
+from app.decoders.serato.mp3.v2.Mp3Decoder import Mp3Decoder
+from app.decoders.serato.mp4.v2.Mp4Decoder import Mp4Decoder
 from app.models.MusicFile import MusicFile
+from app.models.serato.EntryData import EntryData
+from app.models.serato.EntryType import EntryType
+from app.serializers.serato.v2.BpmLockSerializer import BpmLockSerializer
+from app.serializers.serato.v2.ColorSerializer import ColorSerializer
+from app.serializers.serato.v2.CueSerializer import CueSerializer
+from app.serializers.serato.v2.LoopSerializer import LoopSerializer
 from app.services.marker.BaseExtractorService import BaseExtractorService
 from app.utils.serato import read_bytes
 from app.utils.serato.type_detector import detect_type
@@ -15,24 +22,60 @@ class MarkerExtractorService(BaseExtractorService):
     def source_name(cls):
         return "GEOB:Serato Markers2"
 
+    @staticmethod
+    def remove_padding(data: bytes):
+        length = len(data)
+        padding = -abs(2 - length % 4)
+
+        return data[:padding]
+
     def execute(self, file: MusicFile):
         assert isinstance(file, MusicFile)
 
-        raw_file = file.location
-        tagfile = mutagen.File(raw_file)
-        if tagfile is not None:
-            try:
-                data = tagfile[self.source_name()].data
-            except KeyError:
-                print('File is missing "GEOB:Serato Markers2" tag')
-                return 1
-        else:
-            with open(raw_file, mode='rb') as fp:
-                data = fp.read()
+        filepath = file.location
+        filename, file_extension = os.path.splitext(filepath)
+        entries = []
+        match file_extension:
+            case '.m4a':
+                decoder = Mp4Decoder('----:com.serato.dj:markersv2')
+                data = decoder.decode(music_file=file)
 
-        return list(self.__parse(data))
+            case '.mp3':
+                decoder = Mp3Decoder("GEOB:Serato Markers2")
+                data = decoder.decode(music_file=file)
 
-    def __parse(self, data: list):
+            case _:
+                raise TypeError(f"Extension {file_extension} is invalid!")
+
+        if isinstance(data, list):
+            entries = list(self.__deserialize(data))
+
+        return entries
+
+    @staticmethod
+    def __deserialize(data: list):
+        for entry_data in data:
+            assert isinstance(entry_data, EntryData)
+            match entry_data.data_type():
+                case EntryType.CUE:
+                    serializer = CueSerializer
+
+                case EntryType.LOOP:
+                    serializer = LoopSerializer
+
+                case EntryType.COLOR:
+                    serializer = ColorSerializer
+
+                case EntryType.BPM_LOCK:
+                    serializer = BpmLockSerializer
+
+                case _:
+                    print(f"Entry type {entry_data.data_type()} not supported and cannot be deserialized (v2)!")
+                    break
+
+            yield serializer.deserialize(entry_data)
+
+    def __parse(self, data: bytes):
         version_len = struct.calcsize(self.FMT_VERSION)
         version = struct.unpack(self.FMT_VERSION, data[:version_len])
         assert version == (0x01, 0x01)

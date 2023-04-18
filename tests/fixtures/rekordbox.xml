@@ -50,35 +50,27 @@
                Size="8537860" TotalTime="213" DiscNumber="0" TrackNumber="0"
                Year="0" AverageBpm="115.00" DateAdded="2023-04-13" BitRate="320"
                SampleRate="44100" Comments="" PlayCount="0" Rating="0"
-               Location="tests/fixtures/Persephone%20-%20Retro%20Funky%20(SUNDANCE%20remix).mp3"
+               Location="tests/fixtures/Persephone%20-%20Retro%20Funky%20(SUNDANCE%20remix).m4a"
                Remixer="" Tonality="9A" Label="" Mix="">
             <TEMPO Inizio="0.310" Bpm="115.00" Metro="4/4" Battito="1"/>
+            <POSITION_MARK Name="first beat mp4" Type="0" Start="0.254" Num="0" Red="230" Green="40" Blue="40"/>
+            <POSITION_MARK Name="second beat mp4" Type="0" Start="2.341" Num="1" Red="0" Green="224" Blue="255"/>
+            <POSITION_MARK Name="third bar mp4" Type="0" Start="4.428" Num="2" Red="40" Green="226" Blue="20"/>
+            <POSITION_MARK Name="first loops mp4" Type="4" Start="2.341" End="4.428" Num="0" Red="224" Green="100" Blue="27"/>
+        </TRACK>
+        <TRACK TrackID="112013117" Name="Persephone - Retro Funky (SUNDANCE remix)"
+               Artist="" Composer="" Album="" Grouping="" Genre="" Kind="MP3 File"
+               Size="8537860" TotalTime="213" DiscNumber="0" TrackNumber="0"
+               Year="0" AverageBpm="115.00" DateAdded="2023-04-13" BitRate="320"
+               SampleRate="44100" Comments="" PlayCount="0" Rating="0"
+               Location="tests/fixtures/Persephone%20-%20Retro%20Funky%20(SUNDANCE%20remix).mp3"
+               Remixer="" Tonality="9A" Label="" Mix="">
+            <TEMPO Inizio="0.312" Bpm="115.00" Metro="4/4" Battito="3"/>
             <POSITION_MARK Name="first beat" Type="0" Start="0.254" Num="0" Red="230" Green="40" Blue="40"/>
             <POSITION_MARK Name="second beat" Type="0" Start="2.341" Num="1" Red="0" Green="224" Blue="255"/>
             <POSITION_MARK Name="third bar" Type="0" Start="4.428" Num="2" Red="40" Green="226" Blue="20"/>
             <POSITION_MARK Name="first loops" Type="4" Start="2.341" End="4.428" Num="0" Red="224" Green="100" Blue="27"/>
         </TRACK>
-<!--        <TRACK TrackID="112013117" Name="Persephone - Retro Funky (SUNDANCE remix)"-->
-<!--               Artist="" Composer="" Album="" Grouping="" Genre="" Kind="MP3 File"-->
-<!--               Size="8537860" TotalTime="213" DiscNumber="0" TrackNumber="0"-->
-<!--               Year="0" AverageBpm="115.00" DateAdded="2023-04-13" BitRate="320"-->
-<!--               SampleRate="44100" Comments="" PlayCount="0" Rating="0"-->
-<!--               Location="tests/fixtures/Persephone%20-%20Retro%20Funky%20(SUNDANCE%20remix).mp3"-->
-<!--               Remixer="" Tonality="9A" Label="" Mix="">-->
-<!--            <TEMPO Inizio="0.312" Bpm="115.00" Metro="4/4" Battito="3"/>-->
-<!--            <POSITION_MARK Name="track start" Type="0" Start="0.312" Num="0" Red="40" Green="226"-->
-<!--                           Blue="20"/>-->
-<!--            <POSITION_MARK Name="first beat" Type="0" Start="3.442" Num="1" Red="230" Green="40"-->
-<!--                           Blue="40"/>-->
-<!--            <POSITION_MARK Name="first beat loop" Type="4" Start="3.442" End="7.616" Num="2"-->
-<!--                           Red="0" Green="224" Blue="255"/>-->
-<!--            <POSITION_MARK Name="mix loop" Type="4" Start="7.616" End="11.790" Num="3" Red="222"-->
-<!--                           Green="68" Blue="207"/>-->
-<!--            <POSITION_MARK Name="" Type="0" Start="207.965" Num="6" Red="40" Green="226"-->
-<!--                           Blue="20"/>-->
-<!--            <POSITION_MARK Name="end" Type="0" Start="210.052" Num="7" Red="230" Green="40"-->
-<!--                           Blue="40"/>-->
-<!--        </TRACK>-->
 <!--        <TRACK TrackID="112013117" Name="Persephone - Retro Funky (SUNDANCE remix)"-->
 <!--               Artist="" Composer="" Album="" Grouping="" Genre="" Kind="MP3 File"-->
 <!--               Size="8537860" TotalTime="213" DiscNumber="0" TrackNumber="0"-->

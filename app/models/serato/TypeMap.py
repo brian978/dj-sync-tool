@@ -12,6 +12,9 @@ class TypeMap:
             case HotCueType.LOOP:
                 return EntryType.LOOP
 
+            case HotCueType.PASSTHROUGH:
+                return EntryType.INVALID
+
             case _:
                 return EntryType.INVALID
 
@@ -23,6 +26,9 @@ class TypeMap:
 
             case EntryType.LOOP:
                 return HotCueType.LOOP
+
+            case EntryType.PASSTHROUGH:
+                return HotCueType.PASSTHROUGH
 
             case _:
                 return HotCueType.INVALID

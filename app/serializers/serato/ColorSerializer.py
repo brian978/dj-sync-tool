@@ -3,6 +3,4 @@ from .EntrySerializer import EntrySerializer
 
 
 class ColorSerializer(EntrySerializer):
-    FMT = '>4s'
-    FIELDS = ('color',)
     MODEL = ColorModel
