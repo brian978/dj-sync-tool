@@ -50,7 +50,7 @@
                Size="8537860" TotalTime="213" DiscNumber="0" TrackNumber="0"
                Year="0" AverageBpm="115.00" DateAdded="2023-04-13" BitRate="320"
                SampleRate="44100" Comments="" PlayCount="0" Rating="0"
-               Location="tests/fixtures/Persephone%20-%20Retro%20Funky%20(SUNDANCE%20remix).m4a"
+               Location="tests/fixtures/Persephone%20-%20Retro%20Funky%20(SUNDANCE%20remix).mp3"
                Remixer="" Tonality="9A" Label="" Mix="">
             <TEMPO Inizio="0.310" Bpm="115.00" Metro="4/4" Battito="1"/>
             <POSITION_MARK Name="first beat" Type="0" Start="0.254" Num="0" Red="230" Green="40" Blue="40"/>

@@ -4,20 +4,19 @@ from io import BytesIO
 from typing import Generator
 
 # noinspection PyPep8Naming
-from mutagen.mp4 import MP4 as MutagenFile
-from mutagen.mp4 import MP4FreeForm
+from mutagen.mp3 import MP3 as MutagenFile
 
 from app.decoders.serato.BaseDecoder import BaseDecoder
 from app.models.MusicFile import MusicFile
 from app.models.serato.EntryData import EntryData
+from app.models.serato.EntryModel import EntryModel
 from app.models.serato.EntryType import EntryType
-from app.utils.serato import split_string, join_string
+from app.utils.serato import split_string
+from app.utils.serato.encoder import decode
 
 
 class Mp3Decoder(BaseDecoder):
-    STRUCT_LENGTH = 0x13
-    STRUCT_FMT = '>IIc4sc3sBB'
-    TAG_NAME = '----:com.serato.dj:markers'
+    TAG_NAME = 'GEOB:Serato Markers_'
     TAG_VERSION = b'\x02\x05'
     MARKERS_NAME = b'Serato Markers_'
 
@@ -71,11 +70,10 @@ class Mp3Decoder(BaseDecoder):
         return mutagen_file
 
     def _read_data_from_tags(self, filepath: str) -> bytes | None:
-        tags = MutagenFile(filepath).tags
+        tags = MutagenFile(filepath)
         if self.TAG_NAME in tags:
-            tag_data = tags[self.TAG_NAME][0]
-            decoded = base64.b64decode(self._pad_encoded_data(join_string(tag_data)))
-            return decoded.replace(b'application/octet-stream\x00\x00' + self.MARKERS_NAME + b'\x00', b'')
+            tag_data = tags[self.TAG_NAME]
+            return tag_data.data
 
         return None
 
@@ -83,20 +81,13 @@ class Mp3Decoder(BaseDecoder):
         fp = BytesIO(data)
         assert struct.unpack(self.FMT_VERSION, fp.read(2)) == (0x02, 0x05)
 
-        # First 5 are CUE points
-        # Next 9 are loops (only the first 8 are populated)
         for i in range(self._get_entry_count(fp)):
             entry_data = fp.read(self.STRUCT_LENGTH)
             assert len(entry_data) == self.STRUCT_LENGTH
-            destructured = struct.unpack(self.STRUCT_FMT, entry_data)
 
-            if i < 4:
-                yield self._create_cue_entry(destructured, EntryType.CUE)
-            elif 4 <= i <= 14:
-                yield self._create_cue_entry(destructured, EntryType.LOOP)
+            yield self._create_cue_entry(self._extract_cue_data(entry_data), EntryType.CUE)
 
-        # Last 4 bytes are the color of the track
-        yield self._create_color_entry(struct.unpack('>4s', fp.read(4)))
+        yield self._create_color_entry(self._extract_color_data(fp.read()))
 
     @staticmethod
     def _pad_encoded_data(data: bytes):
@@ -144,6 +135,43 @@ class Mp3Decoder(BaseDecoder):
         return obj
 
     @staticmethod
+    def _extract_cue_data(data: bytes) -> tuple:
+        info_size = struct.calcsize(EntryModel.FMT)
+        info = struct.unpack(EntryModel.FMT, data[:info_size])
+        entry_data = []
+
+        start_position_set = None
+        end_position_set = None
+        for field, value in zip(EntryModel.FIELDS, info):
+            if field == 'start_position_set':
+                assert value in (0x00, 0x7F)
+                value = value != 0x7F
+                start_position_set = value
+            elif field == 'end_position_set':
+                assert value in (0x00, 0x7F)
+                value = value != 0x7F
+                end_position_set = value
+            elif field == 'start_position':
+                assert start_position_set is not None
+                if start_position_set:
+                    value = struct.unpack('>I', decode(value).rjust(4, b'\x00'))[0]
+                else:
+                    value = None
+            elif field == 'end_position':
+                assert end_position_set is not None
+                if end_position_set:
+                    value = struct.unpack('>I', decode(value).rjust(4, b'\x00'))[0]
+                else:
+                    value = None
+            elif field == 'color':
+                value = decode(value)
+            elif field == 'type':
+                value = EntryType(value)
+            entry_data.append(value)
+
+        return entry_data
+
+    @staticmethod
     def _dump_cue_entry(entry_data: EntryData) -> tuple:
         return (
             entry_data.get('start_position'),
@@ -159,3 +187,6 @@ class Mp3Decoder(BaseDecoder):
     @staticmethod
     def _dump_color_entry(entry_data: EntryData) -> tuple:
         return (entry_data.get('color'),)
+
+    def _extract_color_data(self, ):
+        pass
