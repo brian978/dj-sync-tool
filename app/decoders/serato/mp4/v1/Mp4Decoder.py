@@ -27,7 +27,7 @@ class Mp4Decoder(BaseDecoder):
         filepath = music_file.location
         data = self._read_data_from_tags(filepath)
 
-        if data is None:
+        if data is None or len(data) == 0:
             return list()
 
         return list(self._entry_data(data))
