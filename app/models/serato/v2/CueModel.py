@@ -29,6 +29,9 @@ class CueModel(BaseEntryModel):
         setattr(self, 'color', bytes.fromhex(ColorMap.to_serato(color)))
 
     def set_name(self, name: str):
+        if self.locked():
+            return
+
         setattr(self, 'name', name)
 
     def dump(self):
