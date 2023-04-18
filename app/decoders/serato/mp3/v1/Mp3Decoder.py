@@ -1,8 +1,8 @@
-import base64
 import struct
 from io import BytesIO
 from typing import Generator
 
+from mutagen import id3
 # noinspection PyPep8Naming
 from mutagen.mp3 import MP3 as MutagenFile
 
@@ -12,8 +12,7 @@ from app.models.serato.ColorModel import ColorModel
 from app.models.serato.EntryData import EntryData
 from app.models.serato.EntryModel import EntryModel
 from app.models.serato.EntryType import EntryType
-from app.utils.serato import split_string
-from app.utils.serato.encoder import decode
+from app.utils.serato.encoder import decode, encode
 
 
 class Mp3Decoder(BaseDecoder):
@@ -33,34 +32,43 @@ class Mp3Decoder(BaseDecoder):
 
         return list(self._entry_data(data))
 
-    # def encode(self, music_file: MusicFile, entries: list) -> MutagenFile:
-    #     assert isinstance(self._source, str)
-    #
-    #     payload = b''
-    #     entries_count = 0
-    #     for entry in entries:
-    #         assert isinstance(entry, EntryData)
-    #         match entry.data_type():
-    #             case EntryType.COLOR:
-    #                 structured = struct.pack('>4s', *self._dump_color_entry(entry))
-    #
-    #             case _:
-    #                 structured = struct.pack(self.STRUCT_FMT, *self._dump_cue_entry(entry))
-    #                 entries_count += 1
-    #
-    #         assert structured is not None
-    #         payload += structured
-    #
-    #     return self._write_data_to_tags(music_file, self._enrich_payload(payload, entries_count))
+    def encode(self, music_file: MusicFile, entries: list) -> MutagenFile:
+        assert isinstance(self._source, str)
 
-    # def _write_data_to_tags(self, music_file: MusicFile, payload: bytes):
-    #     data = split_string(self._add_padding(base64.b64encode(payload)))
-    #     filepath = music_file.location
-    #     mutagen_file = MutagenFile(filepath)
-    #     tags = mutagen_file.tags
-    #     tags[self.TAG_NAME][0] = MP4FreeForm(data)
-    #
-    #     return mutagen_file
+        payload = b''
+        entries_count = 0
+        for entry in entries:
+            assert isinstance(entry, EntryData)
+            match entry.data_type():
+                case EntryType.COLOR:
+                    structured = self._dump_color_entry(entry)
+
+                case _:
+                    structured = self._dump_cue_entry(entry)
+                    entries_count += 1
+
+            assert structured is not None
+            payload += structured
+
+        return self._write_data_to_tags(music_file, self._enrich_payload(payload, entries_count))
+
+    def _enrich_payload(self, payload: bytes, entries_count: int | None = None):
+        header = self.TAG_VERSION  # version
+        if entries_count is not None:
+            header += struct.pack('>I', entries_count)  # entries count
+
+        return header + payload
+
+    def _write_data_to_tags(self, music_file: MusicFile, payload: bytes):
+        mutagen_file = MutagenFile(music_file.location)
+        mutagen_file[self.TAG_NAME] = id3.GEOB(
+            encoding=0,
+            mime='application/octet-stream',
+            desc=self.MARKERS_NAME,
+            data=payload,
+        )
+
+        return mutagen_file
 
     def _read_data_from_tags(self, filepath: str) -> bytes | None:
         tags = MutagenFile(filepath)
@@ -169,19 +177,28 @@ class Mp3Decoder(BaseDecoder):
 
         return obj
 
-    @staticmethod
-    def _dump_cue_entry(entry_data: EntryData) -> tuple:
-        return (
-            entry_data.get('start_position'),
-            entry_data.get('end_position'),
-            b'\x00',
-            b'\xff\xff\xff\xff',
-            b'\x00',
-            entry_data.get('color'),
-            entry_data.get('type'),
+    def _dump_cue_entry(self, entry_data: EntryData) -> bytes:
+        return struct.pack('>B4sB4s6s4sBB', *(
+            0x7F if not bool(entry_data.get('start_position_set')) else 0x00,
+            self._parse_position(entry_data.get('start_position')),
+            0x7F if not bool(entry_data.get('end_position_set')) else 0x00,
+            self._parse_position(entry_data.get('end_position')),
+            entry_data.get('field5'),
+            encode(entry_data.get('color')),
+            int(entry_data.get('type')),
             int(entry_data.get('is_locked'))
-        )
+        ))
 
     @staticmethod
-    def _dump_color_entry(entry_data: EntryData) -> tuple:
-        return (entry_data.get('color'),)
+    def _parse_position(value):
+        if value is None:
+            value = 0x7F7F7F7F.to_bytes(4, 'big')
+        else:
+            value = encode(struct.pack('>I', value)[1:])
+
+        return value
+
+    def _dump_color_entry(self, entry_data: EntryData) -> bytes:
+        return struct.pack('>4s', *(
+            encode(entry_data.get('color')),
+        ))
