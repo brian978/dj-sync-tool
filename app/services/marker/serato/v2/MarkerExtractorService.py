@@ -35,7 +35,6 @@ class MarkerExtractorService(BaseExtractorService):
         filepath = file.location
         filename, file_extension = os.path.splitext(filepath)
         entries = []
-        raise NotImplementedError("V2 extractor not ready")
         match file_extension:
             case '.m4a':
                 decoder = Mp4Decoder('----:com.serato.dj:markersv2')

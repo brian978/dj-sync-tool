@@ -19,7 +19,7 @@ class Mp3Decoder(BaseDecoder):
     STRUCT_LENGTH = 0x16
     TAG_NAME = 'GEOB:Serato Markers_'
     TAG_VERSION = b'\x02\x05'
-    MARKERS_NAME = b'Serato Markers_'
+    MARKERS_NAME = 'Serato Markers_'
 
     def decode(self, music_file: MusicFile) -> list:
         assert isinstance(self._source, str)

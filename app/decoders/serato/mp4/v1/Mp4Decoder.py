@@ -62,7 +62,7 @@ class Mp4Decoder(BaseDecoder):
         return header + payload
 
     def _write_data_to_tags(self, music_file: MusicFile, payload: bytes):
-        data = split_string(self._add_padding(base64.b64encode(payload)))
+        data = split_string(self._pad_payload(base64.b64encode(payload)))
         filepath = music_file.location
         mutagen_file = MutagenFile(filepath)
         tags = mutagen_file.tags
@@ -100,12 +100,18 @@ class Mp4Decoder(BaseDecoder):
 
     @staticmethod
     def _pad_encoded_data(data: bytes):
+        """
+        Used when reading the data from the tags
+        """
         padding = b'A==' if len(data) % 4 == 1 else (b'=' * (-len(data) % 4))
 
         return data + padding
 
     @staticmethod
-    def _add_padding(data: bytes):
+    def _pad_payload(data: bytes):
+        """
+        Used when writing the data to the tags
+        """
         length = len(data)
         padding = abs(1 - length % 4)
 

@@ -14,20 +14,9 @@ from app.utils.serato import join_string, get_entry_name, split_string
 
 
 class Mp3Decoder(Mp3DecoderV1):
-    TAG_NAME = '----:com.serato.dj:markersv2'
+    TAG_NAME = 'GEOB:Serato Markers2'
     TAG_VERSION = b'\x01\x01'
-    MARKERS_NAME = b'Serato Markers2'
-
-    def decode(self, music_file: MusicFile) -> list:
-        assert isinstance(self._source, str)
-
-        filepath = music_file.location
-        data = self._read_data_from_tags(filepath)
-
-        if data is None:
-            return list()
-
-        return list(self._entry_data(data))
+    MARKERS_NAME = 'Serato Markers2'
 
     def encode(self, music_file: MusicFile, entries: list) -> MutagenFile:
         assert isinstance(self._source, str)
@@ -63,7 +52,7 @@ class Mp3Decoder(Mp3DecoderV1):
         Also, the payload is split at 72 characters before padding is applied
         """
         # Append the version for the non-encoded payload
-        payload = b'\x01\x01' + payload
+        payload = self.TAG_VERSION + payload
         payload = self._remove_encoded_data_pad(base64.b64encode(payload))
         payload = self._pad_payload(split_string(payload))
         payload = super()._enrich_payload(payload, entries_count)
@@ -94,39 +83,45 @@ class Mp3Decoder(Mp3DecoderV1):
                 case 'COLOR':
                     yield self._create_color_entry(struct.unpack('>c3s', entry_data))
                 case 'CUE':
-                    yield self._create_cue_entry(self._extract_cue_data(entry_data), EntryType.CUE)
+                    yield self.__create_cue_entry(self._extract_cue_data(entry_data), EntryType.CUE)
                 case 'LOOP':
-                    yield self._create_cue_entry(self._extract_loop_data(entry_data), EntryType.LOOP)
+                    yield self.__create_cue_entry(self._extract_loop_data(entry_data), EntryType.LOOP)
                 case 'BPMLOCK':
                     yield self._create_bpm_lock_entry(struct.unpack('>?', entry_data))
 
     @staticmethod
+    def _remove_null_padding(payload: bytes):
+        """
+        Used when reading the data from the tags
+        """
+        return payload[:payload.index(b'\x00')]
+
+    @staticmethod
     def _pad_encoded_data(data: bytes):
+        """
+        Used when reading the data from the tags
+        """
         padding = b'A==' if len(data) % 4 == 1 else (b'=' * (-len(data) % 4))
 
         return data + padding
 
     @staticmethod
     def _remove_encoded_data_pad(data: bytes):
-        return data.replace(b'=', b'')
+        """
+        Used when after the base64 encode when writing data to the tags
+        """
+        return data.replace(b'=', b'A')
 
     @staticmethod
     def _pad_payload(payload: bytes):
+        """
+        Used when writing the data to the tags
+        """
         length = len(payload)
-        if length < 512:
-            return payload.ljust(512, b'\x00')
+        if length < 468:
+            return payload.ljust(468, b'\x00')
 
-        return payload.ljust(1024, b'\x00') + b'\x00'
-
-    @staticmethod
-    def _remove_null_padding(payload: bytes):
-        return payload[:payload.index(b'\x00')]
-
-    @staticmethod
-    def _add_padding(data: bytes) -> bytes:
-        padding = b'A==' if len(data) % 4 == 1 else (b'=' * (-len(data) % 4))
-
-        return data + padding
+        return payload.ljust(982, b'\x00') + b'\x00'
 
     @staticmethod
     def _create_color_entry(data: tuple) -> EntryData:
@@ -137,7 +132,7 @@ class Mp3Decoder(Mp3DecoderV1):
         return obj
 
     @staticmethod
-    def _create_cue_entry(data: tuple, entry_type) -> EntryData:
+    def __create_cue_entry(data: tuple, entry_type) -> EntryData:
         """
         ### CUE
         Struct: (INDEX,   POS_START, NULL, COLOR,     NULL, LOCKED, NAME,         NULL)
@@ -165,8 +160,8 @@ class Mp3Decoder(Mp3DecoderV1):
         return obj
 
     @staticmethod
-    def _extract_cue_data(entry_data):
-        fp = BytesIO(entry_data)
+    def _extract_cue_data(data: bytes) -> tuple:
+        fp = BytesIO(data)
         fp.seek(1)  # first byte is NULL as it's a separator
 
         return (
@@ -181,7 +176,7 @@ class Mp3Decoder(Mp3DecoderV1):
         )
 
     @staticmethod
-    def _extract_loop_data(entry_data):
+    def _extract_loop_data(entry_data) -> tuple:
         fp = BytesIO(entry_data)
         fp.seek(1)  # first byte is NULL as it's a separator
 
@@ -196,8 +191,7 @@ class Mp3Decoder(Mp3DecoderV1):
             *fp.read().partition(b'\x00')[:-1]  # NAME + ending NULL separator
         )
 
-    @staticmethod
-    def _dump_color_entry(entry_data: EntryData) -> bytes:
+    def _dump_color_entry(self, entry_data: EntryData) -> bytes:
         """
         NAME   NULL  STRUCT LEN        NULL    COLOR
         COLOR  \x00  \x00\x00\x00\x04  \x00    \xff\xff\xff
@@ -209,8 +203,7 @@ class Mp3Decoder(Mp3DecoderV1):
 
         return b''.join([b'COLOR', b'\x00', struct.pack('>I', len(data)), data])
 
-    @staticmethod
-    def _dump_cue_entry(entry_data: EntryData) -> bytes:
+    def _dump_cue_entry(self, entry_data: EntryData) -> bytes:
         """
         NAME   NULL  STRUCT LEN          NULL    INDEX   POS START           POS END   COLOR  NULL  LOCKED  NAME        NULL
         CUE    \x00  \x00\x00\x00\x16    \x00    \x00    \x00\x00\x00\xfe    \x00      \xc0&& \x00  \x00    first bar   \x00

@@ -101,32 +101,38 @@ class Mp4Decoder(Mp4DecoderV1):
                     yield self._create_bpm_lock_entry(struct.unpack('>?', entry_data))
 
     @staticmethod
+    def _remove_null_padding(payload: bytes):
+        """
+        Used when reading the data from the tags
+        """
+        return payload[:payload.index(b'\x00')]
+
+    @staticmethod
     def _pad_encoded_data(data: bytes):
+        """
+        Used when reading the data from the tags
+        """
         padding = b'A==' if len(data) % 4 == 1 else (b'=' * (-len(data) % 4))
 
         return data + padding
 
     @staticmethod
     def _remove_encoded_data_pad(data: bytes):
+        """
+        Used when after the base64 encode when writing data to the tags
+        """
         return data.replace(b'=', b'')
 
     @staticmethod
     def _pad_payload(payload: bytes):
+        """
+        Used when writing the data to the tags
+        """
         length = len(payload)
         if length < 512:
             return payload.ljust(512, b'\x00')
 
         return payload.ljust(1024, b'\x00') + b'\x00'
-
-    @staticmethod
-    def _remove_null_padding(payload: bytes):
-        return payload[:payload.index(b'\x00')]
-
-    @staticmethod
-    def _add_padding(data: bytes) -> bytes:
-        padding = b'A==' if len(data) % 4 == 1 else (b'=' * (-len(data) % 4))
-
-        return data + padding
 
     @staticmethod
     def _create_color_entry(data: tuple) -> EntryData:

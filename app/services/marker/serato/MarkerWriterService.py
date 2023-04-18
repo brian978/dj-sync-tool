@@ -10,8 +10,6 @@ from app.models.serato.EntryType import EntryType
 from app.serializers.serato.ColorSerializer import ColorSerializer
 from app.serializers.serato.EntrySerializer import EntrySerializer
 from app.services.marker.BaseWriterService import BaseWriterService
-from mutagen import id3
-from mutagen import File as MutagenFile
 
 
 class MarkerWriterService(BaseWriterService):
@@ -23,8 +21,8 @@ class MarkerWriterService(BaseWriterService):
 
         entries = file.get_markers(self.source_name())
 
-        # self.write_hot_cues(file.hot_cues.copy(), entries)
-        # self.write_cue_loops(file.cue_loops.copy(), entries)
+        self.write_hot_cues(file.hot_cues.copy(), entries)
+        self.write_cue_loops(file.cue_loops.copy(), entries)
         self.__save(file, entries)
 
     @staticmethod
