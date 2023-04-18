@@ -1,9 +1,7 @@
 import os
 import struct
 
-import mutagen
-from mutagen.mp4 import MP4
-
+from app.decoders.serato.mp3.v1.Mp3Decoder import Mp3Decoder
 from app.models.MusicFile import MusicFile
 from app.models.serato.ColorModel import ColorModel
 from app.models.serato.EntryModel import EntryModel
@@ -41,16 +39,8 @@ class MarkerExtractorService(BaseExtractorService):
                 data = decoder.decode(music_file=file)
 
             case '.mp3':
-                tagfile = mutagen.File(filepath)
-                if tagfile is not None:
-                    try:
-                        data = tagfile[self.source_name()].data
-                    except KeyError:
-                        print('File is missing "GEOB:Serato Markers_" tag')
-                        return self.__create_empty_entries()
-                else:
-                    with open(filepath, mode='rb') as fp:
-                        data = fp.read()
+                decoder = Mp3Decoder("GEOB:Serato Markers_")
+                data = decoder.decode(music_file=file)
 
             case _:
                 raise TypeError(f"Extension {file_extension} is invalid!")
