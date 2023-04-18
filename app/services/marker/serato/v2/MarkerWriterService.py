@@ -1,3 +1,5 @@
+import os
+
 from app.decoders.serato.mp3.v2.Mp3Decoder import Mp3Decoder
 from app.decoders.serato.mp4.v2.Mp4Decoder import Mp4Decoder
 from app.models.HotCue import HotCue
@@ -96,15 +98,22 @@ class MarkerWriterService(BaseWriterService):
         if len(entries) == 0:
             return
 
+        filepath = file.location
+        filename, file_extension = os.path.splitext(filepath)
+
+        match file_extension:
+            case '.m4a':
+                decoder = Mp4Decoder('----:com.serato.dj:markers')
+                mutagen_file = decoder.encode(music_file=file, entries=entries).tags
+
+            case '.mp3':
+                decoder = Mp3Decoder("GEOB:Serato Markers2")
+                mutagen_file = decoder.encode(music_file=file, entries=entries)
+
+            case _:
+                return
+
         print(f"Dumping {self.source_name()} for file {file.location}")
-
-        if file.location.lower().endswith(".m4a"):
-            decoder = Mp4Decoder('----:com.serato.dj:markers')
-            mutagen_file = decoder.encode(music_file=file, entries=entries).tags
-        else:
-            decoder = Mp3Decoder("GEOB:Serato Markers2")
-            mutagen_file = decoder.encode(music_file=file, entries=entries)
-
         mutagen_file.save(file.location)
 
     def __save(self, file: MusicFile, entries: list):

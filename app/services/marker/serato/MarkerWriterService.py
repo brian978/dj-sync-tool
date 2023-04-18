@@ -1,3 +1,4 @@
+import os
 import struct
 
 from app.decoders.serato.mp3.v1.Mp3Decoder import Mp3Decoder
@@ -83,14 +84,22 @@ class MarkerWriterService(BaseWriterService):
                 return entry
 
     def __write_tag(self, file: MusicFile, entries: list):
-        print(f"Dumping {self.source_name()} for file {file.location}")
-        if file.location.lower().endswith(".m4a"):
-            decoder = Mp4Decoder('----:com.serato.dj:markers')
-            mutagen_file = decoder.encode(music_file=file, entries=entries).tags
-        else:
-            decoder = Mp3Decoder("GEOB:Serato Markers_")
-            mutagen_file = decoder.encode(music_file=file, entries=entries)
+        filepath = file.location
+        filename, file_extension = os.path.splitext(filepath)
 
+        match file_extension:
+            case '.m4a':
+                decoder = Mp4Decoder('----:com.serato.dj:markers')
+                mutagen_file = decoder.encode(music_file=file, entries=entries).tags
+
+            case '.mp3':
+                decoder = Mp3Decoder("GEOB:Serato Markers_")
+                mutagen_file = decoder.encode(music_file=file, entries=entries)
+
+            case _:
+                return
+
+        print(f"Dumping {self.source_name()} for file {file.location}")
         mutagen_file.save(file.location)
 
     def __save(self, file: MusicFile, entries: list):

@@ -43,7 +43,8 @@ class MarkerExtractorService(BaseExtractorService):
                 data = decoder.decode(music_file=file)
 
             case _:
-                raise TypeError(f"Extension {file_extension} is invalid!")
+                print(f"Marker v1 extraction for extension {file_extension} is not yet supported! File: {filepath}")
+                return entries
 
         if isinstance(data, list):
             entries = list(self.__deserialize(data))
