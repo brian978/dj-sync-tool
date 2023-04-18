@@ -51,15 +51,6 @@ class Mp3Decoder(BaseDecoder):
 
         return self._write_data_to_tags(music_file, self._enrich_payload(payload, entries_count))
 
-    def _enrich_payload(self, payload: bytes, entries_count: int | None = None):
-        header = b'application/octet-stream\x00\x00' + self.MARKERS_NAME + b'\x00'  # header
-        header += self.TAG_VERSION  # version
-
-        if entries_count is not None:
-            header += struct.pack('>I', entries_count)  # entries count
-
-        return header + payload
-
     def _write_data_to_tags(self, music_file: MusicFile, payload: bytes):
         data = split_string(self._add_padding(base64.b64encode(payload)))
         filepath = music_file.location
@@ -88,19 +79,6 @@ class Mp3Decoder(BaseDecoder):
             yield self._create_cue_entry(self._extract_cue_data(entry_data), EntryType.CUE)
 
         yield self._create_color_entry(self._extract_color_data(fp.read()))
-
-    @staticmethod
-    def _pad_encoded_data(data: bytes):
-        padding = b'A==' if len(data) % 4 == 1 else (b'=' * (-len(data) % 4))
-
-        return data + padding
-
-    @staticmethod
-    def _add_padding(data: bytes):
-        length = len(data)
-        padding = abs(1 - length % 4)
-
-        return data.ljust(length + padding, b'A')
 
     @staticmethod
     def _get_entry_count(buffer: BytesIO):
@@ -188,5 +166,5 @@ class Mp3Decoder(BaseDecoder):
     def _dump_color_entry(entry_data: EntryData) -> tuple:
         return (entry_data.get('color'),)
 
-    def _extract_color_data(self, ):
+    def _extract_color_data(self, ) -> tuple:
         pass
