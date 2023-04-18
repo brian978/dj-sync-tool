@@ -2,7 +2,7 @@ import struct
 
 from app.models.HotCue import HotCue
 from app.models.serato.v2.BaseEntryModel import BaseEntryModel
-from models.serato.ColorMap import ColorMap
+from app.models.serato.ColorMap import ColorMap
 
 
 class CueModel(BaseEntryModel):

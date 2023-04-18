@@ -5,7 +5,7 @@ from app.services.marker.serato.v2.MarkerExtractorService import MarkerExtractor
 from app.services.marker.serato.MarkerWriterService import MarkerWriterService
 from app.services.marker.serato.v2.MarkerWriterService import MarkerWriterService as MarkerWriterServiceV2
 
-reader = XmlReader(path='var/rekordbox.xml')
+reader = XmlReader(path='tests/fixtures/rekordbox.xml')
 
 file_manager = FileManagerService(reader)
 

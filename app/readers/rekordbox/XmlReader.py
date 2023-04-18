@@ -1,5 +1,6 @@
 import os.path
 from xml.dom import minidom
+from xml.dom.minidom import Element
 
 from app.models.rekordbox.Track import Track
 from app.readers.ReaderInterface import ReaderInterface
@@ -10,12 +11,13 @@ class XmlReader(ReaderInterface):
         self.__path = os.path.abspath(path)
 
     def read(self):
-        collection = minidom.parse(self.__path)
-        tracks = collection.getElementsByTagName('TRACK')
-
         files = []
-        for xml_track in tracks:
-            track = Track(xml_track)
+        collection = minidom.parse(self.__path).getElementsByTagName('COLLECTION')[0]
+        for node in collection.childNodes:
+            if not isinstance(node, Element) or node.nodeName != 'TRACK':
+                continue
+
+            track = Track(node)
             files.append(track.decode())
 
         return files

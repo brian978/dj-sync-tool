@@ -7,9 +7,6 @@ from app.services.marker.BaseWriterService import BaseWriterService
 from mutagen import id3
 from mutagen import File as MutagenFile
 
-from models.serato.EntryModel import EntryModel
-
-
 class MarkerWriterService(BaseWriterService):
     def source_name(self):
         return "GEOB:Serato Markers_"
