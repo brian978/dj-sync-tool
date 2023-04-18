@@ -8,6 +8,7 @@ from mutagen.mp3 import MP3 as MutagenFile
 
 from app.decoders.serato.BaseDecoder import BaseDecoder
 from app.models.MusicFile import MusicFile
+from app.models.serato.ColorModel import ColorModel
 from app.models.serato.EntryData import EntryData
 from app.models.serato.EntryModel import EntryModel
 from app.models.serato.EntryType import EntryType
@@ -16,6 +17,7 @@ from app.utils.serato.encoder import decode
 
 
 class Mp3Decoder(BaseDecoder):
+    STRUCT_LENGTH = 0x16
     TAG_NAME = 'GEOB:Serato Markers_'
     TAG_VERSION = b'\x02\x05'
     MARKERS_NAME = b'Serato Markers_'
@@ -31,34 +33,34 @@ class Mp3Decoder(BaseDecoder):
 
         return list(self._entry_data(data))
 
-    def encode(self, music_file: MusicFile, entries: list) -> MutagenFile:
-        assert isinstance(self._source, str)
+    # def encode(self, music_file: MusicFile, entries: list) -> MutagenFile:
+    #     assert isinstance(self._source, str)
+    #
+    #     payload = b''
+    #     entries_count = 0
+    #     for entry in entries:
+    #         assert isinstance(entry, EntryData)
+    #         match entry.data_type():
+    #             case EntryType.COLOR:
+    #                 structured = struct.pack('>4s', *self._dump_color_entry(entry))
+    #
+    #             case _:
+    #                 structured = struct.pack(self.STRUCT_FMT, *self._dump_cue_entry(entry))
+    #                 entries_count += 1
+    #
+    #         assert structured is not None
+    #         payload += structured
+    #
+    #     return self._write_data_to_tags(music_file, self._enrich_payload(payload, entries_count))
 
-        payload = b''
-        entries_count = 0
-        for entry in entries:
-            assert isinstance(entry, EntryData)
-            match entry.data_type():
-                case EntryType.COLOR:
-                    structured = struct.pack('>4s', *self._dump_color_entry(entry))
-
-                case _:
-                    structured = struct.pack(self.STRUCT_FMT, *self._dump_cue_entry(entry))
-                    entries_count += 1
-
-            assert structured is not None
-            payload += structured
-
-        return self._write_data_to_tags(music_file, self._enrich_payload(payload, entries_count))
-
-    def _write_data_to_tags(self, music_file: MusicFile, payload: bytes):
-        data = split_string(self._add_padding(base64.b64encode(payload)))
-        filepath = music_file.location
-        mutagen_file = MutagenFile(filepath)
-        tags = mutagen_file.tags
-        tags[self.TAG_NAME][0] = MP4FreeForm(data)
-
-        return mutagen_file
+    # def _write_data_to_tags(self, music_file: MusicFile, payload: bytes):
+    #     data = split_string(self._add_padding(base64.b64encode(payload)))
+    #     filepath = music_file.location
+    #     mutagen_file = MutagenFile(filepath)
+    #     tags = mutagen_file.tags
+    #     tags[self.TAG_NAME][0] = MP4FreeForm(data)
+    #
+    #     return mutagen_file
 
     def _read_data_from_tags(self, filepath: str) -> bytes | None:
         tags = MutagenFile(filepath)
@@ -76,7 +78,7 @@ class Mp3Decoder(BaseDecoder):
             entry_data = fp.read(self.STRUCT_LENGTH)
             assert len(entry_data) == self.STRUCT_LENGTH
 
-            yield self._create_cue_entry(self._extract_cue_data(entry_data), EntryType.CUE)
+            yield self._create_cue_entry(self._extract_cue_data(entry_data))
 
         yield self._create_color_entry(self._extract_color_data(fp.read()))
 
@@ -85,37 +87,10 @@ class Mp3Decoder(BaseDecoder):
         return struct.unpack('>I', buffer.read(4))[0]
 
     @staticmethod
-    def _create_cue_entry(data: tuple, entry_type: EntryType) -> EntryData:
-        obj = EntryData(entry_type)
-        obj.set('start_position_set', not (data[0] == 4294967295))
-        obj.set('start_position', data[0])
-        obj.set('end_position_set', not (data[1] == 4294967295))
-        obj.set('end_position', data[1])
-        obj.set('field5', None)
-        obj.set('color', data[5])
-        obj.set('type', int(data[6]))
-        obj.set('is_locked', bool(data[7]))
-
-        return obj
-
-    @staticmethod
-    def _create_color_entry(data: tuple) -> EntryData:
-        obj = EntryData(EntryType.COLOR)
-        obj.set('start_position_set', False)
-        obj.set('start_position', None)
-        obj.set('end_position_set', False)
-        obj.set('end_position', None)
-        obj.set('field5', None)
-        obj.set('color', data[0])
-        obj.set('type', EntryType.COLOR)
-        obj.set('is_locked', False)
-
-        return obj
-
-    @staticmethod
-    def _extract_cue_data(data: bytes) -> tuple:
-        info_size = struct.calcsize(EntryModel.FMT)
-        info = struct.unpack(EntryModel.FMT, data[:info_size])
+    def _extract_cue_data(data: bytes) -> list:
+        struct_fmt = '>B4sB4s6s4sBB'
+        info_size = struct.calcsize(struct_fmt)
+        info = struct.unpack(struct_fmt, data[:info_size])
         entry_data = []
 
         start_position_set = None
@@ -144,10 +119,55 @@ class Mp3Decoder(BaseDecoder):
             elif field == 'color':
                 value = decode(value)
             elif field == 'type':
-                value = EntryType(value)
+                value = value
             entry_data.append(value)
 
         return entry_data
+
+    @staticmethod
+    def _extract_color_data(data: bytes) -> list:
+        struct_fmt = '>4s'
+        info_size = struct.calcsize(struct_fmt)
+        info = struct.unpack(struct_fmt, data[:info_size])
+        entry_data = []
+
+        for field, value in zip(ColorModel.FIELDS, info):
+            if field == 'color':
+                value = decode(value)
+            entry_data.append(value)
+
+        return entry_data
+
+    @staticmethod
+    def _create_cue_entry(data: list) -> EntryData:
+        entry_type = EntryType(int(data[6]))
+
+        obj = EntryData(entry_type)
+        obj.set('start_position_set', data[0])
+        obj.set('start_position', data[1])
+        obj.set('end_position_set', data[2])
+        obj.set('end_position', data[3])
+        obj.set('field5', data[4])
+        obj.set('color', data[5])
+        obj.set('type', int(data[6]))
+        obj.set('is_locked', bool(data[7]))
+
+        return obj
+
+    # noinspection DuplicatedCode
+    @staticmethod
+    def _create_color_entry(data: list) -> EntryData:
+        obj = EntryData(EntryType.COLOR)
+        obj.set('start_position_set', False)
+        obj.set('start_position', None)
+        obj.set('end_position_set', False)
+        obj.set('end_position', None)
+        obj.set('field5', None)
+        obj.set('color', data[0])
+        obj.set('type', EntryType.COLOR)
+        obj.set('is_locked', False)
+
+        return obj
 
     @staticmethod
     def _dump_cue_entry(entry_data: EntryData) -> tuple:
@@ -165,6 +185,3 @@ class Mp3Decoder(BaseDecoder):
     @staticmethod
     def _dump_color_entry(entry_data: EntryData) -> tuple:
         return (entry_data.get('color'),)
-
-    def _extract_color_data(self, ) -> tuple:
-        pass

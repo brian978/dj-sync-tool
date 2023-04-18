@@ -14,8 +14,6 @@ from app.utils.serato import join_string, get_entry_name, split_string
 
 
 class Mp3Decoder(Mp3DecoderV1):
-    STRUCT_LENGTH = 0x13
-    STRUCT_FMT = '>IIc4sc3sBB'
     TAG_NAME = '----:com.serato.dj:markersv2'
     TAG_VERSION = b'\x01\x01'
     MARKERS_NAME = b'Serato Markers2'

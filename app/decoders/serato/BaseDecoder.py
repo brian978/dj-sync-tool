@@ -7,8 +7,6 @@ class BaseDecoder:
 
     """
     FMT_VERSION = 'BB'
-    STRUCT_LENGTH = 0x16
-    STRUCT_FMT = EntryModel.FMT
 
     def __init__(self, source: str):
         self._source: str = source

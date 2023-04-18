@@ -55,7 +55,7 @@ class MarkerExtractorService(BaseExtractorService):
         for entry_data in data:
             assert isinstance(entry_data, EntryData)
             match entry_data.data_type():
-                case EntryType.CUE | EntryType.LOOP:
+                case EntryType.CUE | EntryType.LOOP | EntryType.INVALID:
                     serializer = EntrySerializer
                 case EntryType.COLOR:
                     serializer = ColorSerializer
