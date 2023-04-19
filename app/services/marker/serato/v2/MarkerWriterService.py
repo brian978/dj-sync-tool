@@ -1,7 +1,3 @@
-import os
-
-from app.decoders.serato.mp3.v2.Mp3Decoder import Mp3Decoder
-from app.decoders.serato.mp4.v2.Mp4Decoder import Mp4Decoder
 from app.factories.serato.DecoderFactory import DecoderFactory
 from app.models.HotCue import HotCue
 from app.models.HotCueType import HotCueType
@@ -46,12 +42,12 @@ class MarkerWriterService(BaseWriterService):
 
     @staticmethod
     def __find_storable_models(entries: list, model_type: type[BaseEntryModel]):
-        sortable = []
+        storable = []
         for entry in entries:
             if isinstance(entry, model_type) and entry.get_index() >= 0:
-                sortable.append(entry)
+                storable.append(entry)
 
-        return sortable
+        return sorted(storable, key=lambda x: int(x.get('index')))
 
     @staticmethod
     def __find_color_model(entries: list):

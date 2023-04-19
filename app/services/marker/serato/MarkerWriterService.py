@@ -50,6 +50,7 @@ class MarkerWriterService(BaseWriterService):
         """
         Loops will be created on the next 5 (05 - 13)
         """
+        cue_loops = sorted(cue_loops, key=lambda x: int(x.index))
         for idx, entry in enumerate(entries):
             if len(cue_loops) == 0:
                 break
@@ -57,17 +58,18 @@ class MarkerWriterService(BaseWriterService):
             if idx < 5 or idx > 14:
                 continue
 
-            hot_cue = cue_loops.pop(0)
-            assert isinstance(hot_cue, HotCue)
-            if hot_cue.type != HotCueType.LOOP:
-                continue
+            offset_idx = idx - 5
+            for hot_cue in cue_loops:
+                assert isinstance(hot_cue, HotCue)
+                if hot_cue.index != offset_idx or hot_cue.type != HotCueType.LOOP:
+                    continue
 
-            entry.set_cue_loop(hot_cue.start, hot_cue.end)
+                entry.set_cue_loop(hot_cue.start, hot_cue.end)
 
-            # Copy over the cue loop start to an empty hot cue (if any)
-            empty_cue_entry = self.__find_empty_hot_cue(hot_cue.index, entries)
-            if empty_cue_entry is not None:
-                empty_cue_entry.set_hot_cue(hot_cue.start, hot_cue.hex_color())
+                # Copy over the cue loop start to an empty hot cue (if any)
+                empty_cue_entry = self.__find_empty_hot_cue(hot_cue.index, entries)
+                if empty_cue_entry is not None:
+                    empty_cue_entry.set_hot_cue(hot_cue.start, hot_cue.hex_color())
 
     @staticmethod
     def __find_empty_hot_cue(position: int, entries: list):
@@ -85,7 +87,9 @@ class MarkerWriterService(BaseWriterService):
             return
 
         print(f"Dumping {self.source_name()} for file {file.location}")
-        decoder.encode(music_file=file, entries=entries).save(file.location)
+        mutagenFile = decoder.encode(music_file=file, entries=entries)
+        # pass
+        mutagenFile.save(file.location)
 
     def __save(self, file: MusicFile, entries: list):
         self.__write_tag(file, list(self.__serialize(entries)))
