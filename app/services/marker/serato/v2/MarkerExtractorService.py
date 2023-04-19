@@ -5,6 +5,7 @@ import struct
 
 from app.decoders.serato.mp3.v2.Mp3Decoder import Mp3Decoder
 from app.decoders.serato.mp4.v2.Mp4Decoder import Mp4Decoder
+from app.factories.serato.DecoderFactory import DecoderFactory
 from app.models.MusicFile import MusicFile
 from app.models.serato.EntryData import EntryData
 from app.models.serato.EntryType import EntryType
@@ -12,7 +13,7 @@ from app.serializers.serato.v2.BpmLockSerializer import BpmLockSerializer
 from app.serializers.serato.v2.ColorSerializer import ColorSerializer
 from app.serializers.serato.v2.CueSerializer import CueSerializer
 from app.serializers.serato.v2.LoopSerializer import LoopSerializer
-from app.services.marker.BaseExtractorService import BaseExtractorService
+from app.services.BaseExtractorService import BaseExtractorService
 from app.utils.serato import read_bytes
 from app.utils.serato.type_detector import detect_type
 
@@ -20,7 +21,7 @@ from app.utils.serato.type_detector import detect_type
 class MarkerExtractorService(BaseExtractorService):
     @classmethod
     def source_name(cls):
-        return "GEOB:Serato Markers2"
+        return "Markers_v2"
 
     @staticmethod
     def remove_padding(data: bytes):
@@ -32,22 +33,14 @@ class MarkerExtractorService(BaseExtractorService):
     def execute(self, file: MusicFile):
         assert isinstance(file, MusicFile)
 
-        filepath = file.location
-        filename, file_extension = os.path.splitext(filepath)
         entries = []
-        match file_extension:
-            case '.m4a':
-                decoder = Mp4Decoder('----:com.serato.dj:markersv2')
-                data = decoder.decode(music_file=file)
+        decoder = DecoderFactory.marker_decoder(file, 'v2')
 
-            case '.mp3':
-                decoder = Mp3Decoder("GEOB:Serato Markers2")
-                data = decoder.decode(music_file=file)
+        if decoder is None:
+            print(f"Marker v2 extraction for file: {file.location} is not supported!")
+            return entries
 
-            case _:
-                print(f"Marker v2 extraction for extension {file_extension} is not yet supported! File: {filepath}")
-                return entries
-
+        data = decoder.decode(music_file=file)
         if isinstance(data, list):
             entries = list(self.__deserialize(data))
 

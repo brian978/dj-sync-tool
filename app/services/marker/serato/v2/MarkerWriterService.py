@@ -2,6 +2,7 @@ import os
 
 from app.decoders.serato.mp3.v2.Mp3Decoder import Mp3Decoder
 from app.decoders.serato.mp4.v2.Mp4Decoder import Mp4Decoder
+from app.factories.serato.DecoderFactory import DecoderFactory
 from app.models.HotCue import HotCue
 from app.models.HotCueType import HotCueType
 from app.models.MusicFile import MusicFile
@@ -16,18 +17,18 @@ from app.serializers.serato.v2.BpmLockSerializer import BpmLockSerializer
 from app.serializers.serato.v2.ColorSerializer import ColorSerializer
 from app.serializers.serato.v2.CueSerializer import CueSerializer
 from app.serializers.serato.v2.LoopSerializer import LoopSerializer
-from app.services.marker.BaseWriterService import BaseWriterService
+from app.services.BaseWriterService import BaseWriterService
 
 
 class MarkerWriterService(BaseWriterService):
     @classmethod
     def source_name(cls):
-        return "GEOB:Serato Markers2"
+        return "Markers_v2"
 
     def execute(self, file: MusicFile):
         assert isinstance(file, MusicFile)
 
-        entries = file.get_markers(self.source_name())
+        entries = file.get_tag_data(self.source_name())
 
         self.write_hot_cues(file.hot_cues.copy(), entries)
         self.write_cue_loops(file.cue_loops.copy(), entries)
@@ -84,7 +85,7 @@ class MarkerWriterService(BaseWriterService):
             self.__write_cue_name(LoopModel, hot_cue, entries, at_index)
 
             # Copy over the cue loop start to an empty hot cue (if any)
-            if self._copy_over_loops and not self.__cue_exists(hot_cue.index, entries):
+            if not self.__cue_exists(hot_cue.index, entries):
                 # Create new entry
                 entries.insert(at_index, CueModel.from_hot_cue(hot_cue))
 
@@ -98,23 +99,13 @@ class MarkerWriterService(BaseWriterService):
         if len(entries) == 0:
             return
 
-        filepath = file.location
-        filename, file_extension = os.path.splitext(filepath)
+        decoder = DecoderFactory.marker_decoder(file, 'v2')
 
-        match file_extension:
-            case '.m4a':
-                decoder = Mp4Decoder('----:com.serato.dj:markers')
-                mutagen_file = decoder.encode(music_file=file, entries=entries).tags
-
-            case '.mp3':
-                decoder = Mp3Decoder("GEOB:Serato Markers2")
-                mutagen_file = decoder.encode(music_file=file, entries=entries)
-
-            case _:
-                return
+        if decoder is None:
+            return
 
         print(f"Dumping {self.source_name()} for file {file.location}")
-        mutagen_file.save(file.location)
+        decoder.encode(music_file=file, entries=entries).save(file.location)
 
     def __save(self, file: MusicFile, entries: list):
         self.__write_tag(file, list(self.__serialize(entries)))
@@ -164,8 +155,14 @@ class MarkerWriterService(BaseWriterService):
             if hot_cue.index != idx:
                 continue
 
-            entry.set_name(hot_cue.name)
             entry_found = True
+            entry.set_name(hot_cue.name)
+            match hot_cue.type:
+                case HotCueType.CUE:
+                    entry.set_hot_cue(hot_cue.start, hot_cue.hex_color())
+
+                case HotCueType.LOOP:
+                    entry.set_cue_loop(hot_cue.start, hot_cue.end)
 
         if not entry_found:
             # Create new entry

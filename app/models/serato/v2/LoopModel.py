@@ -30,7 +30,6 @@ class LoopModel(BaseEntryModel):
 
         setattr(self, 'start_position', position_start)
         setattr(self, 'end_position', position_end)
-        setattr(self, 'color', 0)
 
     def set_name(self, name: str):
         if self.locked():

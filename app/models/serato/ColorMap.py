@@ -31,4 +31,8 @@ class ColorMap:
 
     @classmethod
     def to_serato(cls, color: str):
-        return cls.map[color.upper()]
+        color = color.upper()
+        if color not in cls.map:
+            raise ValueError(f'Color {color} is not in the map!')
+
+        return cls.map[color]

@@ -1,7 +1,7 @@
 from app.models.MusicFile import MusicFile
 from app.readers.ReaderInterface import ReaderInterface
-from app.services.marker.BaseExtractorService import BaseExtractorService
-from app.services.marker.BaseWriterService import BaseWriterService
+from app.services.BaseExtractorService import BaseExtractorService
+from app.services.BaseWriterService import BaseWriterService
 
 
 class FileManagerService:
@@ -17,7 +17,7 @@ class FileManagerService:
     def add_writer(self, writer: BaseWriterService):
         self.__writers.append(writer)
 
-    def find_all(self):
+    def extract_tags(self):
         files = self.__reader.read()
         for file in files:
             assert isinstance(file, MusicFile)
@@ -25,7 +25,7 @@ class FileManagerService:
             # extract tags from the files
             for extractor in self.__extractors:
                 assert isinstance(extractor, BaseExtractorService)
-                file.append_markers(extractor.source_name(), extractor.execute(file))
+                file.add_tag_data(extractor.source_name(), extractor.execute(file))
 
         return files
 

@@ -22,8 +22,6 @@ class Mp3Decoder(BaseDecoder):
     MARKERS_NAME = 'Serato Markers_'
 
     def decode(self, music_file: MusicFile) -> list:
-        assert isinstance(self._source, str)
-
         filepath = music_file.location
         data = self._read_data_from_tags(filepath)
 
@@ -33,8 +31,6 @@ class Mp3Decoder(BaseDecoder):
         return list(self._entry_data(data))
 
     def encode(self, music_file: MusicFile, entries: list) -> MutagenFile:
-        assert isinstance(self._source, str)
-
         payload = b''
         entries_count = 0
         for entry in entries:

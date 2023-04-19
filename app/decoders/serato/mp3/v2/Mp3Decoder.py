@@ -19,8 +19,6 @@ class Mp3Decoder(Mp3DecoderV1):
     MARKERS_NAME = 'Serato Markers2'
 
     def encode(self, music_file: MusicFile, entries: list) -> MutagenFile:
-        assert isinstance(self._source, str)
-
         payload = b''
         for entry in entries:
             assert isinstance(entry, EntryData)

@@ -22,8 +22,6 @@ class Mp4Decoder(BaseDecoder):
     MARKERS_NAME = b'Serato Markers_'
 
     def decode(self, music_file: MusicFile) -> list:
-        assert isinstance(self._source, str)
-
         filepath = music_file.location
         data = self._read_data_from_tags(filepath)
 
@@ -33,8 +31,6 @@ class Mp4Decoder(BaseDecoder):
         return list(self._entry_data(data))
 
     def encode(self, music_file: MusicFile, entries: list) -> MutagenFile:
-        assert isinstance(self._source, str)
-
         payload = b''
         entries_count = 0
         for entry in entries:
@@ -67,7 +63,7 @@ class Mp4Decoder(BaseDecoder):
         mutagen_file = MutagenFile(filepath)
         mutagen_file[self.TAG_NAME] = MP4FreeForm(data)
 
-        return mutagen_file
+        return mutagen_file.tags
 
     def _read_data_from_tags(self, filepath: str) -> bytes | None:
         tags = MutagenFile(filepath).tags
@@ -89,9 +85,9 @@ class Mp4Decoder(BaseDecoder):
             assert len(entry_data) == self.STRUCT_LENGTH
             destructured = struct.unpack(self.STRUCT_FMT, entry_data)
 
-            if i < 4:
+            if i <= 4:
                 yield self._create_cue_entry(destructured, EntryType.CUE)
-            elif 4 <= i <= 14:
+            elif 4 < i <= 14:
                 yield self._create_cue_entry(destructured, EntryType.LOOP)
 
         # Last 4 bytes are the color of the track

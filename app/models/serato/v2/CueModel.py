@@ -25,7 +25,7 @@ class CueModel(BaseEntryModel):
         ])
 
     def set_hot_cue(self, position: int, color: str):
-        setattr(self, 'start_position', position / 100)
+        setattr(self, 'start_position', position)
         setattr(self, 'color', bytes.fromhex(ColorMap.to_serato(color)))
 
     def set_name(self, name: str):
