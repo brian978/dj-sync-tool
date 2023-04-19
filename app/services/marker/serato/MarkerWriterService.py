@@ -66,10 +66,10 @@ class MarkerWriterService(BaseWriterService):
 
                 entry.set_cue_loop(hot_cue.start, hot_cue.end)
 
-                # Copy over the cue loop start to an empty hot cue (if any)
-                empty_cue_entry = self.__find_empty_hot_cue(hot_cue.index, entries)
-                if empty_cue_entry is not None:
-                    empty_cue_entry.set_hot_cue(hot_cue.start, hot_cue.hex_color())
+                # # Copy over the cue loop start to an empty hot cue (if any)
+                # empty_cue_entry = self.__find_empty_hot_cue(hot_cue.index, entries)
+                # if empty_cue_entry is not None:
+                #     empty_cue_entry.set_hot_cue(hot_cue.start, hot_cue.hex_color())
 
     @staticmethod
     def __find_empty_hot_cue(position: int, entries: list):

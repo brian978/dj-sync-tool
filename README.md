@@ -19,7 +19,6 @@ The application will copy the CUE and LOOPS from Rekordbox to Serato.
 * LOOPS points will be overwritten if they are on the same position as in RB:
   * if the LOOP is LOCKED in Serato, it _will not be overwritten_ (not even the name)
   * it will be created if the loop does not exist in the given position
-  * additionally a CUE point will be created for the LOOP, ONLY IF the CUE point position is empty
 
 For the application to properly set the CUEs and LOOPs ***it's very important*** to first have the beatgrid properly setup in Serato
 as the app will use the beatgrid information to calculate the offsets between the RB beatgrid and the Serato beatgrid.

@@ -80,10 +80,10 @@ class MarkerWriterService(BaseWriterService):
 
             self.__write_cue_name(LoopModel, hot_cue, entries, at_index)
 
-            # Copy over the cue loop start to an empty hot cue (if any)
-            if not self.__cue_exists(hot_cue.index, entries):
-                # Create new entry
-                entries.insert(at_index, CueModel.from_hot_cue(hot_cue))
+            # # Copy over the cue loop start to an empty hot cue (if any)
+            # if not self.__cue_exists(hot_cue.index, entries):
+            #     # Create new entry
+            #     entries.insert(at_index, CueModel.from_hot_cue(hot_cue))
 
             at_index += 1  # move to next position
 
