@@ -22,4 +22,4 @@ file_manager.add_writer(MarkerWriterServiceV2())
 file_manager.add_extractor(BeatgridExtractorService())
 
 # Save to files
-file_manager.write_tags(file_manager.find_all())
+file_manager.write_tags(file_manager.extract_tags())

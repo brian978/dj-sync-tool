@@ -17,7 +17,7 @@ class FileManagerService:
     def add_writer(self, writer: BaseWriterService):
         self.__writers.append(writer)
 
-    def find_all(self):
+    def extract_tags(self):
         files = self.__reader.read()
         for file in files:
             assert isinstance(file, MusicFile)
