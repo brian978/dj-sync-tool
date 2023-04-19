@@ -1,10 +1,15 @@
 # Original code
 The starting point of this project was the code from https://github.com/Holzhaus/serato-tags
 
+# Disclaimer
+This software is provided as-is without active support and without providing any warranty. If you decide to
+use it, make sure to back up your files as I take no responsibility for any loss of data. I built & use this software
+for my own personal use, so I am testing it, however there might be cases that I haven't covered with my testing.
+
 # How to use
 1. Make sure you have Python 3.11 installed on your computer
-2. Export the rekordbox.xml file from Rekordbox and place it into a `var/` folder right at the root of the project
-3. **Make a backup of your music files**
+2. Export the rekordbox.xml file from Rekordbox, open the file `import.py` and replace `tests/fixtures/rekordbox.xml` with the path of your file.
+3. **MAKE A BACKUP OF YOUR MUSIC FILES**
 4. Run `make install`
 5. Run `make`
 
@@ -20,8 +25,11 @@ The application will copy the CUE and LOOPS from Rekordbox to Serato.
   * if the LOOP is LOCKED in Serato, it _will not be overwritten_ (not even the name)
   * it will be created if the loop does not exist in the given position
 
-For the application to properly set the CUEs and LOOPs ***it's very important*** to first have the beatgrid properly setup in Serato
+For the application to properly set the CUEs and LOOPs ***it's very important*** to first have the beatgrid setup in Serato
 as the app will use the beatgrid information to calculate the offsets between the RB beatgrid and the Serato beatgrid.
+
+**Actually** you don't even need to set the entire beatgrid for Serato **just the first marker**, as the software will use
+that one to calculate the offset.
 
 ## License
 
