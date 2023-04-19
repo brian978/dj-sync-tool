@@ -1,4 +1,4 @@
-import importlib
+from importlib import import_module
 import os
 
 from app.decoders.serato.BaseDecoder import BaseDecoder
@@ -6,6 +6,8 @@ from app.models.MusicFile import MusicFile
 
 
 class DecoderFactory:
+    __NAMESPACE = 'app.decoders.serato'
+
     @classmethod
     def __file_extension(cls, file: MusicFile):
         filepath = file.location
@@ -17,7 +19,13 @@ class DecoderFactory:
     def marker_decoder(cls, file: MusicFile, version: str) -> BaseDecoder:
         match cls.__file_extension(file):
             case '.m4a':
-                return importlib.import_module(f'app.decoders.serato.mp4.{version}.Mp4Decoder').Mp4Decoder()
+                return import_module(f'{cls.__NAMESPACE}.mp4.{version}.Mp4Decoder').Mp4Decoder()
 
             case '.mp3':
-                return importlib.import_module(f'app.decoders.serato.mp3.{version}.Mp3Decoder').Mp3Decoder()
+                return import_module(f'{cls.__NAMESPACE}.mp3.{version}.Mp3Decoder').Mp3Decoder()
+
+    @classmethod
+    def beatgrid_decoder(cls, file: MusicFile, version: str):
+        match cls.__file_extension(file):
+            case '.mp3':
+                return import_module(f'{cls.__NAMESPACE}.mp3.{version}.Mp3BeatgridDecoder').Mp3BeatgridDecoder()
