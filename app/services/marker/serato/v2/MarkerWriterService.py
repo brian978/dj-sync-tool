@@ -27,7 +27,7 @@ class MarkerWriterService(BaseWriterService):
     def execute(self, file: MusicFile):
         assert isinstance(file, MusicFile)
 
-        entries = file.get_markers(self.source_name())
+        entries = file.get_tag_data(self.source_name())
 
         self.write_hot_cues(file.hot_cues.copy(), entries)
         self.write_cue_loops(file.cue_loops.copy(), entries)

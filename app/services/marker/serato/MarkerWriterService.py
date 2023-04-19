@@ -21,7 +21,7 @@ class MarkerWriterService(BaseWriterService):
     def execute(self, file: MusicFile):
         assert isinstance(file, MusicFile)
 
-        entries = file.get_markers(self.source_name())
+        entries = file.get_tag_data(self.source_name())
 
         if len(entries) == 0:
             """

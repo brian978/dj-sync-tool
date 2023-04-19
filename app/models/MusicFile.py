@@ -21,7 +21,7 @@ class MusicFile:
         self.cue_loops = []
 
         # Markers are the actual extracted data from Serato tags
-        self.markers = {}
+        self.__tag_data = {}
 
     def add_beatgrid_marker(self, tempo: Tempo):
         self.beatgrid.append(tempo)
@@ -33,8 +33,8 @@ class MusicFile:
         else:
             self.hot_cues.insert(hot_cue.index, hot_cue)
 
-    def append_markers(self, source_name: str, tags: list):
-        self.markers[source_name] = tags
+    def add_tag_data(self, source_name: str, tags: list):
+        self.__tag_data[source_name] = tags
 
-    def get_markers(self, source_name: str):
-        return self.markers[source_name]
+    def get_tag_data(self, source_name: str):
+        return self.__tag_data[source_name]
