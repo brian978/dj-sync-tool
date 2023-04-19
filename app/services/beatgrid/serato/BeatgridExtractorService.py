@@ -13,11 +13,9 @@ class BeatgridExtractorService(BaseExtractorService):
     def execute(self, file: MusicFile):
         assert isinstance(file, MusicFile)
 
-        decoder = DecoderFactory.beatgrid_decoder(file)
+        decoder = DecoderFactory.beatgrid_decoder(file, 'v1')
 
         if decoder is None:
             return []
 
-        data = decoder.decode(file)
-
-        return data
+        return decoder.decode(file)
