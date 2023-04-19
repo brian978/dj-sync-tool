@@ -34,7 +34,6 @@ class BeatgridExtractorService(BaseExtractorService):
         offset = int(round(serato_start - master_start, 3) * 1000)
 
         file.offset = offset
-
-        # file.apply_beatgrid_offset(offset)
+        file.apply_beatgrid_offset(offset)
 
         return

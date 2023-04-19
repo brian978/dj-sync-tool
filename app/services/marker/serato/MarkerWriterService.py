@@ -127,7 +127,7 @@ class MarkerWriterService(BaseWriterService):
         entries = []
 
         for i in range(14):
-            if i < 4:
+            if i <= 4:
                 entry_type = EntryType.CUE
             else:
                 entry_type = EntryType.LOOP

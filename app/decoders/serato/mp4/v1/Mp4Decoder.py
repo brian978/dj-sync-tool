@@ -85,9 +85,9 @@ class Mp4Decoder(BaseDecoder):
             assert len(entry_data) == self.STRUCT_LENGTH
             destructured = struct.unpack(self.STRUCT_FMT, entry_data)
 
-            if i < 4:
+            if i <= 4:
                 yield self._create_cue_entry(destructured, EntryType.CUE)
-            elif 4 <= i <= 14:
+            elif 4 < i <= 14:
                 yield self._create_cue_entry(destructured, EntryType.LOOP)
 
         # Last 4 bytes are the color of the track

@@ -10,6 +10,9 @@ reader = XmlReader(path='tests/fixtures/rekordbox.xml')
 
 file_manager = FileManagerService(reader)
 
+# Serato Beatgrid -- extractor info is populated in order of registration
+file_manager.add_extractor(BeatgridExtractorService())
+
 # Serato Markers_
 file_manager.add_extractor(MarkerExtractorService())
 file_manager.add_writer(MarkerWriterService())
@@ -17,9 +20,6 @@ file_manager.add_writer(MarkerWriterService())
 # Serato Markers2
 file_manager.add_extractor(MarkerExtractorServiceV2())
 file_manager.add_writer(MarkerWriterServiceV2())
-
-# Serato Beatgrid
-file_manager.add_extractor(BeatgridExtractorService())
 
 # Save to files
 file_manager.write_tags(file_manager.extract_tags())

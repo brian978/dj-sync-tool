@@ -41,7 +41,7 @@ class MusicFile:
         return self.__tag_data[source_name]
 
     def apply_beatgrid_offset(self, offset: int):
-        for hot_cue in self.cue_loops:
+        for hot_cue in self.hot_cues:
             hot_cue.apply_offset(offset)
 
         for loop in self.cue_loops:
