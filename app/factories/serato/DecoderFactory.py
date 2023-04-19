@@ -24,6 +24,9 @@ class DecoderFactory:
             case '.mp3':
                 return import_module(f'{cls.__NAMESPACE}.mp3.{version}.Mp3Decoder').Mp3Decoder()
 
+            case '.aif':
+                return import_module(f'{cls.__NAMESPACE}.aif.{version}.AifDecoder').AifDecoder()
+
     @classmethod
     def beatgrid_decoder(cls, file: MusicFile, version: str):
         match cls.__file_extension(file):
@@ -32,3 +35,6 @@ class DecoderFactory:
 
             case '.mp3':
                 return import_module(f'{cls.__NAMESPACE}.mp3.{version}.Mp3BeatgridDecoder').Mp3BeatgridDecoder()
+
+            case '.aif':
+                return import_module(f'{cls.__NAMESPACE}.aif.{version}.AifBeatgridDecoder').AifBeatgridDecoder()

@@ -20,7 +20,8 @@ class BeatgridExtractorService(BaseExtractorService):
 
         data = decoder.decode(file)
 
-        self.__calculate_offsets(data, file)
+        if len(data):
+            self.__calculate_offsets(data, file)
 
         return data
 
