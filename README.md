@@ -8,27 +8,26 @@ The starting point of this project was the code from https://github.com/Holzhaus
 4. Run `make install`
 5. Run `make`
 
-# Serato Tags
+# What it does
+The application will copy the CUE and LOOPS from Rekordbox to Serato.
 
-This repository aims to document the GEOB ID3 tags that the Serato DJ software uses to store its metadata.
-You can also have a look at [this lengthy blog post](https://homepage.ruhr-uni-bochum.de/jan.holthuis/posts/reversing-seratos-geob-tags) that goes into detail how I reversed the contents of the `Serato Markers2` GEOB tag.
+### How it does it:
+* CUE points will be overwritten if they are on the same position as in RB:
+  * if you have a CUE on position 1 in RB as well as in Serato, it will be overwritten in Serato
+  * if you have a CUE on position 1 in RB but not in Serato, it will be created in Serato
+  * if you have a CUE on position 1 in RB, a CUE on position 2 in Serato, you will get 2 CUE points: pos 1 from RB and pos 2 will be preserved
+* LOOPS points will be overwritten if they are on the same position as in RB:
+  * if the LOOP is LOCKED in Serato, it _will not be overwritten_ (not even the name)
+  * it will be created if the loop does not exist in the given position
+  * additionally a CUE point will be created for the LOOP, ONLY IF the CUE point position is empty
 
-| Tag                                          | Progress      | Contents                   | Example script
-| -------------------------------------------- | ------------- | -------------------------- | --------------
-| [`Serato Analysis`](docs/serato_analysis.md) | Done          | Serato version information |
-| [`Serato Autotags`](docs/serato_autotags.md) | Done          | BPM and Gain values        | [`serato_autotags.py`](scripts/serato_autotags.py)
-| [`Serato BeatGrid`](docs/serato_beatgrid.md) | Mostly done   | Beatgrid Markers           | [`serato_beatgrid.py`](scripts/serato_beatgrid.py)
-| [`Serato Markers2`](docs/serato_markers2.md) | Mostly done   | Hotcues, Saved Loops, etc. | [`serato_markers2.py`](scripts/serato_markers2.py)
-| [`Serato Markers_`](docs/serato_markers_.md) | Mostly done   | Hotcues, Saved Loops, etc. | [`serato_markers_.py`](scripts/serato_markers_.py)
-| [`Serato Offsets_`](docs/serato_offsets_.md) | *Not started* |                            |
-| [`Serato Overview`](docs/serato_overview.md) | Done          | Waveform data              | [`serato_overview.py`](scripts/serato_overview.py)
-
-The different file/tag formats that Serato uses to store the information are documented in [`docs/fileformats.md`](docs/fileformats.md), a script to dump the tag data can be found at [`scripts/tagdump.py`](scripts/tagdump.py).
-
+For the application to properly set the CUEs and LOOPs ***it's very important*** to first have the beatgrid properly setup in Serato
+as the app will use the beatgrid information to calculate the offsets between the RB beatgrid and the Serato beatgrid.
 
 ## License
 
-As example file I used [Perséphone - Retro Funky (SUNDANCE remix)](https://soundcloud.com/sundancemusic/pers-phone-retro-funky), which is licensed under the term of the [Creative Commons Attribution 3.0 Unported (CC BY 3.0) license](https://creativecommons.org/licenses/by/3.0/).
+As example file I used [Perséphone - Retro Funky (SUNDANCE remix)](https://soundcloud.com/sundancemusic/pers-phone-retro-funky), 
+which is licensed under the term of the [Creative Commons Attribution 3.0 Unported (CC BY 3.0) license](https://creativecommons.org/licenses/by/3.0/).
 
-The software in the scripts directory are published under the [MIT license](LICENSE).
-Everything else is licensed as [Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).
+The software in the app directory are published under the [GPL-3.0 license ](LICENSE).
+Everything else is licensed as described [HERE](https://github.com/Holzhaus/serato-tags#license) in the original repository
