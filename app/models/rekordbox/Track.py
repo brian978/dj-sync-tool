@@ -5,6 +5,7 @@ from xml.dom.minidom import Element
 from app.models.HotCue import HotCue
 from app.models.HotCueType import HotCueType
 from app.models.MusicFile import MusicFile
+from app.models.Tempo import Tempo
 from app.models.rekordbox.PositionMarkType import PositionMarkType
 from app.models.rekordbox.TypeMap import TypeMap
 
@@ -23,6 +24,9 @@ class Track:
 
         for hot_cue in self.__hot_cues():
             music_file.add_hot_cue(hot_cue)
+
+        for tempo in self.__beatgrid():
+            music_file.add_beatgrid_marker(tempo)
 
         return music_file
 
@@ -51,6 +55,17 @@ class Track:
                 hot_cue.end = int(float(node.attributes["End"].value) * 1000)  # need value in milliseconds
 
             yield hot_cue
+
+    def __beatgrid(self):
+        for node in self.__track.childNodes:
+            if not isinstance(node, Element) or node.nodeName != 'TEMPO':
+                continue
+
+            tempo = Tempo()
+            tempo.position = node.attributes["Inizio"].value
+            tempo.bpm = node.attributes["Bpm"].value
+
+            yield tempo
 
     @staticmethod
     def __cue_type(index, xml_cue) -> PositionMarkType:

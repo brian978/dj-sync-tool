@@ -7,6 +7,3 @@ class BaseDecoder:
 
     """
     FMT_VERSION = 'BB'
-
-    def __init__(self, source: str):
-        self._source: str = source

@@ -2,6 +2,7 @@ import os
 
 from app.models.HotCue import HotCue
 from app.models.HotCueType import HotCueType
+from app.models.Tempo import Tempo
 
 
 class MusicFile:
@@ -12,9 +13,18 @@ class MusicFile:
         self.dateAdded = ''
         self.playCount = ''
         self.tonality = ''
+
+        self.beatgrid = []
+
+        # Data extracted from Rekordbox
         self.hot_cues = []
         self.cue_loops = []
+
+        # Markers are the actual extracted data from Serato tags
         self.markers = {}
+
+    def add_beatgrid_marker(self, tempo: Tempo):
+        self.beatgrid.append(tempo)
 
     def add_hot_cue(self, hot_cue: HotCue):
         at_index = hot_cue.index

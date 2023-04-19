@@ -103,11 +103,11 @@ class MarkerWriterService(BaseWriterService):
 
         match file_extension:
             case '.m4a':
-                decoder = Mp4Decoder('----:com.serato.dj:markers')
+                decoder = Mp4Decoder()
                 mutagen_file = decoder.encode(music_file=file, entries=entries).tags
 
             case '.mp3':
-                decoder = Mp3Decoder("GEOB:Serato Markers2")
+                decoder = Mp3Decoder()
                 mutagen_file = decoder.encode(music_file=file, entries=entries)
 
             case _:

@@ -20,7 +20,7 @@ from app.utils.serato.type_detector import detect_type
 class MarkerExtractorService(BaseExtractorService):
     @classmethod
     def source_name(cls):
-        return "GEOB:Serato Markers2"
+        return "Markers_v2"
 
     @staticmethod
     def remove_padding(data: bytes):
@@ -37,11 +37,11 @@ class MarkerExtractorService(BaseExtractorService):
         entries = []
         match file_extension:
             case '.m4a':
-                decoder = Mp4Decoder('----:com.serato.dj:markersv2')
+                decoder = Mp4Decoder()
                 data = decoder.decode(music_file=file)
 
             case '.mp3':
-                decoder = Mp3Decoder("GEOB:Serato Markers2")
+                decoder = Mp3Decoder()
                 data = decoder.decode(music_file=file)
 
             case _:
