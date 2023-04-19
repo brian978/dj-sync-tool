@@ -1,5 +1,4 @@
 import os
-import struct
 
 from app.decoders.serato.mp3.v1.Mp3Decoder import Mp3Decoder
 from app.decoders.serato.mp4.v1.Mp4Decoder import Mp4Decoder
@@ -11,7 +10,7 @@ from app.models.serato.EntryModel import EntryModel
 from app.models.serato.EntryType import EntryType
 from app.serializers.serato.ColorSerializer import ColorSerializer
 from app.serializers.serato.EntrySerializer import EntrySerializer
-from app.services.marker.BaseWriterService import BaseWriterService
+from app.services.BaseWriterService import BaseWriterService
 
 
 class MarkerWriterService(BaseWriterService):
@@ -69,10 +68,9 @@ class MarkerWriterService(BaseWriterService):
             entry.set_cue_loop(hot_cue.start, hot_cue.end)
 
             # Copy over the cue loop start to an empty hot cue (if any)
-            if self._copy_over_loops:
-                empty_cue_entry = self.__find_empty_hot_cue(hot_cue.index, entries)
-                if empty_cue_entry is not None:
-                    empty_cue_entry.set_hot_cue(hot_cue.start, hot_cue.hex_color())
+            empty_cue_entry = self.__find_empty_hot_cue(hot_cue.index, entries)
+            if empty_cue_entry is not None:
+                empty_cue_entry.set_hot_cue(hot_cue.start, hot_cue.hex_color())
 
     @staticmethod
     def __find_empty_hot_cue(position: int, entries: list):

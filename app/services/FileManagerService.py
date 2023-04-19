@@ -1,7 +1,7 @@
 from app.models.MusicFile import MusicFile
 from app.readers.ReaderInterface import ReaderInterface
-from app.services.marker.BaseExtractorService import BaseExtractorService
-from app.services.marker.BaseWriterService import BaseWriterService
+from app.services.BaseExtractorService import BaseExtractorService
+from app.services.BaseWriterService import BaseWriterService
 
 
 class FileManagerService:

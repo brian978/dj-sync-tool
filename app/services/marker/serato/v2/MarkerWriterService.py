@@ -16,7 +16,7 @@ from app.serializers.serato.v2.BpmLockSerializer import BpmLockSerializer
 from app.serializers.serato.v2.ColorSerializer import ColorSerializer
 from app.serializers.serato.v2.CueSerializer import CueSerializer
 from app.serializers.serato.v2.LoopSerializer import LoopSerializer
-from app.services.marker.BaseWriterService import BaseWriterService
+from app.services.BaseWriterService import BaseWriterService
 
 
 class MarkerWriterService(BaseWriterService):
@@ -84,7 +84,7 @@ class MarkerWriterService(BaseWriterService):
             self.__write_cue_name(LoopModel, hot_cue, entries, at_index)
 
             # Copy over the cue loop start to an empty hot cue (if any)
-            if self._copy_over_loops and not self.__cue_exists(hot_cue.index, entries):
+            if not self.__cue_exists(hot_cue.index, entries):
                 # Create new entry
                 entries.insert(at_index, CueModel.from_hot_cue(hot_cue))
 

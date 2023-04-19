@@ -8,7 +8,7 @@ from app.models.serato.EntryModel import EntryModel
 from app.models.serato.EntryType import EntryType
 from app.serializers.serato.ColorSerializer import ColorSerializer
 from app.serializers.serato.EntrySerializer import EntrySerializer
-from app.services.marker.BaseExtractorService import BaseExtractorService
+from app.services.BaseExtractorService import BaseExtractorService
 from app.utils.colors import rgb_to_hex
 from app.decoders.serato.mp4.v1.Mp4Decoder import Mp4Decoder
 from app.models.serato.EntryData import EntryData
