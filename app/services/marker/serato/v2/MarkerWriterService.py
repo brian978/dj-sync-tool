@@ -155,8 +155,14 @@ class MarkerWriterService(BaseWriterService):
             if hot_cue.index != idx:
                 continue
 
-            entry.set_name(hot_cue.name)
             entry_found = True
+            entry.set_name(hot_cue.name)
+            match hot_cue.type:
+                case HotCueType.CUE:
+                    entry.set_hot_cue(hot_cue.start, hot_cue.hex_color())
+
+                case HotCueType.LOOP:
+                    entry.set_cue_loop(hot_cue.start, hot_cue.end)
 
         if not entry_found:
             # Create new entry

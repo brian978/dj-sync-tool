@@ -14,11 +14,12 @@ class MusicFile:
         self.playCount = ''
         self.tonality = ''
 
+        self.offset = 0
         self.beatgrid = []
 
         # Data extracted from Rekordbox
-        self.hot_cues = []
-        self.cue_loops = []
+        self.hot_cues: list[HotCue] = list()
+        self.cue_loops: list[HotCue] = list()
 
         # Markers are the actual extracted data from Serato tags
         self.__tag_data = {}
@@ -38,3 +39,10 @@ class MusicFile:
 
     def get_tag_data(self, source_name: str):
         return self.__tag_data[source_name]
+
+    def apply_beatgrid_offset(self, offset: int):
+        for hot_cue in self.cue_loops:
+            hot_cue.apply_offset(offset)
+
+        for loop in self.cue_loops:
+            loop.apply_offset(offset)

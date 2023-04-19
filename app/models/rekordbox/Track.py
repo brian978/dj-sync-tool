@@ -48,7 +48,7 @@ class Track:
             hot_cue.name = node.attributes["Name"].value
             hot_cue.start = int(float(node.attributes["Start"].value) * 1000)  # need value in milliseconds
             hot_cue.index = index
-            hot_cue.color = self.__cue_color(cue_type, node)
+            hot_cue.set_color(self.__cue_color(cue_type, node))
 
             # Only loops have an "End" attribute
             if cue_type == HotCueType.LOOP:
