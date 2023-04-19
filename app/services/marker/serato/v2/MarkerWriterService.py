@@ -2,6 +2,7 @@ import os
 
 from app.decoders.serato.mp3.v2.Mp3Decoder import Mp3Decoder
 from app.decoders.serato.mp4.v2.Mp4Decoder import Mp4Decoder
+from app.factories.serato.DecoderFactory import DecoderFactory
 from app.models.HotCue import HotCue
 from app.models.HotCueType import HotCueType
 from app.models.MusicFile import MusicFile
@@ -22,7 +23,7 @@ from app.services.BaseWriterService import BaseWriterService
 class MarkerWriterService(BaseWriterService):
     @classmethod
     def source_name(cls):
-        return "GEOB:Serato Markers2"
+        return "Markers_v2"
 
     def execute(self, file: MusicFile):
         assert isinstance(file, MusicFile)
@@ -98,23 +99,13 @@ class MarkerWriterService(BaseWriterService):
         if len(entries) == 0:
             return
 
-        filepath = file.location
-        filename, file_extension = os.path.splitext(filepath)
+        decoder = DecoderFactory.marker_decoder(file, 'v2')
 
-        match file_extension:
-            case '.m4a':
-                decoder = Mp4Decoder()
-                mutagen_file = decoder.encode(music_file=file, entries=entries).tags
-
-            case '.mp3':
-                decoder = Mp3Decoder()
-                mutagen_file = decoder.encode(music_file=file, entries=entries)
-
-            case _:
-                return
+        if decoder is None:
+            return
 
         print(f"Dumping {self.source_name()} for file {file.location}")
-        mutagen_file.save(file.location)
+        decoder.encode(music_file=file, entries=entries).save(file.location)
 
     def __save(self, file: MusicFile, entries: list):
         self.__write_tag(file, list(self.__serialize(entries)))

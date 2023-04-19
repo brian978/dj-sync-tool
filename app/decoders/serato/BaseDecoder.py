@@ -1,4 +1,6 @@
-from app.models.serato.EntryModel import EntryModel
+from mutagen import FileType as MutagenFile
+
+from app.models.MusicFile import MusicFile
 
 
 class BaseDecoder:
@@ -7,3 +9,9 @@ class BaseDecoder:
 
     """
     FMT_VERSION = 'BB'
+
+    def decode(self, music_file: MusicFile) -> list:
+        raise NotImplementedError('The decode method of the decoder must be implemented!')
+
+    def encode(self, music_file: MusicFile, entries: list) -> MutagenFile:
+        raise NotImplementedError('The encode method of the decoder must be implemented!')

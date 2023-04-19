@@ -63,7 +63,7 @@ class Mp4Decoder(BaseDecoder):
         mutagen_file = MutagenFile(filepath)
         mutagen_file[self.TAG_NAME] = MP4FreeForm(data)
 
-        return mutagen_file
+        return mutagen_file.tags
 
     def _read_data_from_tags(self, filepath: str) -> bytes | None:
         tags = MutagenFile(filepath).tags
