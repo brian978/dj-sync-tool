@@ -26,7 +26,7 @@ class BeatgridExtractorService(BaseExtractorService):
     @staticmethod
     def __calculate_offsets(data: list, file: MusicFile):
         """
-        For now we assume that we only have fixed beat grids and not dynamic
+        For now, we assume that we only have fixed beat grids and not dynamic
         """
         master_start = float(file.beatgrid[0].position)
         serato_start = round(data[0].position, 3)
