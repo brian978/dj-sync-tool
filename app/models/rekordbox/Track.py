@@ -3,7 +3,6 @@ from datetime import datetime
 from xml.dom.minidom import Element
 
 from app.models.HotCue import HotCue
-from app.models.HotCueType import HotCueType
 from app.models.MusicFile import MusicFile
 from app.models.Tempo import Tempo
 from app.models.rekordbox.PositionMarkType import PositionMarkType
@@ -26,6 +25,8 @@ class Track:
         for hot_cue in self.__hot_cues():
             music_file.add_hot_cue(hot_cue)
 
+        self.__assign_memory_cues(music_file)
+
         for tempo in self.__beatgrid():
             music_file.add_beatgrid_marker(tempo)
 
@@ -45,14 +46,14 @@ class Track:
             cue_type = self.__cue_type(index, node)
 
             hot_cue = HotCue()
-            hot_cue.type = cue_type
+            hot_cue.type = TypeMap.from_rb(cue_type)
             hot_cue.name = node.attributes["Name"].value
             hot_cue.start = int(float(node.attributes["Start"].value) * 1000)  # need value in milliseconds
             hot_cue.index = index
             hot_cue.set_color(self.__cue_color(cue_type, node))
 
             # Only loops have an "End" attribute
-            if cue_type == HotCueType.LOOP:
+            if cue_type == PositionMarkType.LOOP:
                 hot_cue.end = int(float(node.attributes["End"].value) * 1000)  # need value in milliseconds
 
             yield hot_cue
@@ -69,12 +70,25 @@ class Track:
             yield tempo
 
     @staticmethod
+    def __unassigned_indexes(hot_cues: list[HotCue]):
+        # Create a set of all possible index values
+        all_indexes = set(range(8))
+
+        # Iterate over the list of objects and remove assigned index values
+        for obj in hot_cues:
+            if obj.index in all_indexes:
+                all_indexes.remove(obj.index)
+
+        # Return the remaining unassigned index values as a set
+        return all_indexes
+
+    @staticmethod
     def __cue_type(index, xml_cue) -> PositionMarkType:
         cue_type = int(xml_cue.attributes["Type"].value)
         if index < 0:
             cue_type = PositionMarkType.MEMORY.value
 
-        return TypeMap.from_rb(PositionMarkType.parse(cue_type))
+        return PositionMarkType.parse(cue_type)
 
     @staticmethod
     def __cue_color(cue_type, xml_cue):
@@ -86,3 +100,12 @@ class Track:
             int(xml_cue.attributes["Green"].value),
             int(xml_cue.attributes["Blue"].value)
         ]
+
+    def __assign_memory_cues(self, file: MusicFile):
+        unassigned_indexes = self.__unassigned_indexes(file.hot_cues)
+        for hot_cue in file.hot_cues:
+            if hot_cue.index < 0:
+                hot_cue.index = unassigned_indexes.pop()
+                hot_cue.name = f'M: {(hot_cue.name if len(hot_cue.name) > 0 else hot_cue.index)}'
+                if len(unassigned_indexes) == 0:
+                    break

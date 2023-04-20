@@ -19,8 +19,7 @@ class TrackReader(BaseReader):
             if not isinstance(node, Element) or node.nodeName != 'TRACK' or not self.__allowed_track(node):
                 continue
 
-            track = Track(node)
-            files.append(track.decode())
+            files.append(Track(node).decode())
 
         return files
 
