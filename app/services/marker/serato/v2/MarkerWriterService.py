@@ -5,10 +5,10 @@ from app.models.MusicFile import MusicFile
 from app.models.serato.EntryModel import EntryModel
 from app.models.serato.EntryType import EntryType
 from app.models.serato.v2.BaseEntryModel import BaseEntryModel
+from app.models.serato.v2.BpmLockModel import BpmLockModel
+from app.models.serato.v2.ColorModel import ColorModel
 from app.models.serato.v2.CueModel import CueModel
 from app.models.serato.v2.LoopModel import LoopModel
-from app.models.serato.v2.ColorModel import ColorModel
-from app.models.serato.v2.BpmLockModel import BpmLockModel
 from app.serializers.serato.v2.BpmLockSerializer import BpmLockSerializer
 from app.serializers.serato.v2.ColorSerializer import ColorSerializer
 from app.serializers.serato.v2.CueSerializer import CueSerializer

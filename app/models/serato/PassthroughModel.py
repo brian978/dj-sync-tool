@@ -2,8 +2,6 @@ import struct
 
 from app.models.HotCue import HotCue
 from app.models.serato.EntryType import EntryType
-from app.utils.serato.encoder import encode
-from app.models.serato.ColorMap import ColorMap
 
 
 class PassthroughModel(object):

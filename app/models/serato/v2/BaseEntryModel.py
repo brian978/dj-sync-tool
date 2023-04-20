@@ -1,5 +1,3 @@
-import warnings
-
 from app.models.serato.EntryModel import EntryModel
 
 

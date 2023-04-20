@@ -1,16 +1,10 @@
 import base64
 import collections
-import struct
-from io import BytesIO
-
-from app.decoders.serato.BaseDecoder import BaseDecoder
-from app.decoders.serato.mp3.v1.Mp3BeatgridDecoder import Mp3BeatgridDecoder
-from app.models.MusicFile import MusicFile
 
 # noinspection PyPep8Naming
 from mutagen.mp4 import MP4 as MutagenFile
 
-from app.models.serato.BpmMarkerModel import BpmMarkerModel
+from app.decoders.serato.mp3.v1.Mp3BeatgridDecoder import Mp3BeatgridDecoder
 from app.utils.serato import join_string
 
 NonTerminalBeatgridMarker = collections.namedtuple(

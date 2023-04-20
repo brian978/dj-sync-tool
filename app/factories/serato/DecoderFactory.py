@@ -1,5 +1,5 @@
-from importlib import import_module
 import os
+from importlib import import_module
 
 from app.decoders.serato.BaseDecoder import BaseDecoder
 from app.models.MusicFile import MusicFile

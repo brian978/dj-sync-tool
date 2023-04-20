@@ -1,7 +1,7 @@
-from app.decoders.serato.mp3.v1.Mp3BeatgridDecoder import Mp3BeatgridDecoder
-
 # noinspection PyPep8Naming
 from mutagen import File as MutagenFile
+
+from app.decoders.serato.mp3.v1.Mp3BeatgridDecoder import Mp3BeatgridDecoder
 
 
 class AifBeatgridDecoder(Mp3BeatgridDecoder):

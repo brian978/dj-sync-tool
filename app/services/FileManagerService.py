@@ -35,4 +35,3 @@ class FileManagerService:
             for writer in self.__writers:
                 assert isinstance(writer, BaseWriterService)
                 writer.execute(file)
-

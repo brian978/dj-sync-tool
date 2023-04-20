@@ -1,10 +1,7 @@
 import base64
 import io
-import os
 import struct
 
-from app.decoders.serato.mp3.v2.Mp3Decoder import Mp3Decoder
-from app.decoders.serato.mp4.v2.Mp4Decoder import Mp4Decoder
 from app.factories.serato.DecoderFactory import DecoderFactory
 from app.models.MusicFile import MusicFile
 from app.models.serato.EntryData import EntryData
