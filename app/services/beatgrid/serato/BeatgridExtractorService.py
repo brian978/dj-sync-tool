@@ -1,5 +1,3 @@
-import os
-
 from app.factories.serato.DecoderFactory import DecoderFactory
 from app.models.MusicFile import MusicFile
 from app.services.BaseExtractorService import BaseExtractorService

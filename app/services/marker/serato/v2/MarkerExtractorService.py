@@ -1,10 +1,7 @@
 import base64
 import io
-import os
 import struct
 
-from app.decoders.serato.mp3.v2.Mp3Decoder import Mp3Decoder
-from app.decoders.serato.mp4.v2.Mp4Decoder import Mp4Decoder
 from app.factories.serato.DecoderFactory import DecoderFactory
 from app.models.MusicFile import MusicFile
 from app.models.serato.EntryData import EntryData
@@ -14,6 +11,7 @@ from app.serializers.serato.v2.ColorSerializer import ColorSerializer
 from app.serializers.serato.v2.CueSerializer import CueSerializer
 from app.serializers.serato.v2.LoopSerializer import LoopSerializer
 from app.services.BaseExtractorService import BaseExtractorService
+from app.utils.prompt import CliColor, color_print
 from app.utils.serato import read_bytes
 from app.utils.serato.type_detector import detect_type
 
@@ -37,7 +35,7 @@ class MarkerExtractorService(BaseExtractorService):
         decoder = DecoderFactory.marker_decoder(file, 'v2')
 
         if decoder is None:
-            print(f"Marker v2 extraction for file: {file.location} is not supported!")
+            color_print(CliColor.WARNING, f"Marker v2 extraction for file: {file.location} is not supported!")
             return entries
 
         data = decoder.decode(music_file=file)

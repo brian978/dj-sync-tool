@@ -1,8 +1,6 @@
-import struct
-
 from app.models.HotCue import HotCue
-from app.models.serato.EntryType import EntryType
 from app.models.serato.ColorMap import ColorMap
+from app.models.serato.EntryType import EntryType
 
 
 class EntryModel(object):

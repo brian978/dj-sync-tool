@@ -1,14 +1,23 @@
-from app.readers.rekordbox.XmlReader import XmlReader
+from app.readers.rekordbox.PlaylistReader import PlaylistReader
+from app.readers.rekordbox.TrackReader import TrackReader
 from app.services.FileManagerService import FileManagerService
 from app.services.beatgrid.serato.BeatgridExtractorService import BeatgridExtractorService
 from app.services.marker.serato.MarkerExtractorService import MarkerExtractorService
 from app.services.marker.serato.v2.MarkerExtractorService import MarkerExtractorService as MarkerExtractorServiceV2
 from app.services.marker.serato.MarkerWriterService import MarkerWriterService
 from app.services.marker.serato.v2.MarkerWriterService import MarkerWriterService as MarkerWriterServiceV2
+from app.utils.prompt import pick_playlist
 
-reader = XmlReader(path='tests/fixtures/rekordbox.xml')
+xml_file = 'tests/fixtures/rekordbox.xml'
 
-file_manager = FileManagerService(reader)
+# Playlist filter to allow for syncing only specific playlist
+playlist_reader = PlaylistReader(path=xml_file)
+playlists = playlist_reader.read()
+
+track_reader = TrackReader(path=xml_file)
+track_reader.set_playlist(pick_playlist(playlists))
+
+file_manager = FileManagerService(track_reader)
 
 # Serato Beatgrid -- extractor info is populated in order of registration
 file_manager.add_extractor(BeatgridExtractorService())

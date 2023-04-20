@@ -1,5 +1,5 @@
 from app.models.MusicFile import MusicFile
-from app.readers.ReaderInterface import ReaderInterface
+from app.readers.BaseReader import BaseReader
 from app.services.BaseExtractorService import BaseExtractorService
 from app.services.BaseWriterService import BaseWriterService
 
@@ -8,7 +8,7 @@ class FileManagerService:
     __extractors = []
     __writers = []
 
-    def __init__(self, reader: ReaderInterface):
+    def __init__(self, reader: BaseReader):
         self.__reader = reader
 
     def add_extractor(self, extractor: BaseExtractorService):
@@ -35,4 +35,3 @@ class FileManagerService:
             for writer in self.__writers:
                 assert isinstance(writer, BaseWriterService)
                 writer.execute(file)
-

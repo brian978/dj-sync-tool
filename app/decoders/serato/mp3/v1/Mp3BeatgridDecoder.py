@@ -2,12 +2,11 @@ import collections
 import struct
 from io import BytesIO
 
-from app.decoders.serato.BaseDecoder import BaseDecoder
-from app.models.MusicFile import MusicFile
-
 # noinspection PyPep8Naming
 from mutagen.mp3 import MP3 as MutagenFile
 
+from app.decoders.serato.BaseDecoder import BaseDecoder
+from app.models.MusicFile import MusicFile
 from app.models.serato.BpmMarkerModel import BpmMarkerModel
 
 NonTerminalBeatgridMarker = collections.namedtuple(

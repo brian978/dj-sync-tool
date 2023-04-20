@@ -1,18 +1,16 @@
-import os
 import struct
 
-from app.decoders.serato.mp3.v1.Mp3Decoder import Mp3Decoder
 from app.factories.serato.DecoderFactory import DecoderFactory
 from app.models.MusicFile import MusicFile
 from app.models.serato.ColorModel import ColorModel
+from app.models.serato.EntryData import EntryData
 from app.models.serato.EntryModel import EntryModel
 from app.models.serato.EntryType import EntryType
 from app.serializers.serato.ColorSerializer import ColorSerializer
 from app.serializers.serato.EntrySerializer import EntrySerializer
 from app.services.BaseExtractorService import BaseExtractorService
 from app.utils.colors import rgb_to_hex
-from app.decoders.serato.mp4.v1.Mp4Decoder import Mp4Decoder
-from app.models.serato.EntryData import EntryData
+from app.utils.prompt import color_print, CliColor
 
 
 class MarkerExtractorService(BaseExtractorService):
@@ -34,7 +32,7 @@ class MarkerExtractorService(BaseExtractorService):
         decoder = DecoderFactory.marker_decoder(file, 'v1')
 
         if decoder is None:
-            print(f"Marker v1 extraction for file: {file.location} is not supported!")
+            color_print(CliColor.FAIL, f"Marker v1 extraction for file: {file.location} is not supported!")
             return entries
 
         data = decoder.decode(music_file=file)

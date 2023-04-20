@@ -1,6 +1,6 @@
-from app.models.serato.EntryType import EntryType
-from app.models.serato.EntryModel import EntryModel
 from app.models.serato.EntryData import EntryData
+from app.models.serato.EntryModel import EntryModel
+from app.models.serato.EntryType import EntryType
 
 
 class EntrySerializer(object):
