@@ -35,6 +35,8 @@ as the app will use the beatgrid information to calculate the offsets between th
 **Actually** you don't even need to set the entire beatgrid for Serato. You **just need the first marker** to match the
 one from Rekordbox, as the software will use that one to calculate the offset.
 
+**NOTE:** if the HOT CUE or LOOP has a name, that will be copied over as well
+
 ## License
 
 As example file I used [Perséphone - Retro Funky (SUNDANCE remix)](https://soundcloud.com/sundancemusic/pers-phone-retro-funky), 
