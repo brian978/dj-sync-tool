@@ -1,6 +1,9 @@
+import math
+
 from app.factories.serato.DecoderFactory import DecoderFactory
 from app.models.MusicFile import MusicFile
 from app.services.BaseExtractorService import BaseExtractorService
+from app.utils import finder
 
 
 class BeatgridExtractorService(BaseExtractorService):
@@ -38,7 +41,8 @@ class BeatgridExtractorService(BaseExtractorService):
 
         return
 
-    def __calculate_bars(self, file: MusicFile, position: int):
+    @staticmethod
+    def __calculate_bars(file: MusicFile, position: int):
         song_length = float(file.totalTime)  # Length of song in seconds
         bpm = float(file.averageBpm)  # Tempo of song in beats per minute
         first_beat = float(file.beatgrid[0].position)  # Location of first beat in seconds
@@ -47,21 +51,7 @@ class BeatgridExtractorService(BaseExtractorService):
         beat_length = 60 / bpm
 
         # Calculate the start times of the first 20 beats in seconds
-        num_beats = int(song_length / beat_length)
+        num_beats = math.ceil(song_length / beat_length)
         beat_starts = [first_beat + i * beat_length for i in range(num_beats)]
 
-        return self.__find_closest(position, beat_starts)
-
-    @staticmethod
-    def __find_closest(number, values):
-        closest_value = None
-        closest_distance = None
-
-        for value in values:
-            distance = abs(value - number)
-
-            if closest_distance is None or distance < closest_distance:
-                closest_distance = distance
-                closest_value = value
-
-        return closest_value
+        return finder.closest(position, beat_starts)
