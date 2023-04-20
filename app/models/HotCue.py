@@ -14,9 +14,13 @@ class HotCue:
     def apply_offset(self, offset: int):
         if self.start is not None:
             self.start += offset
+            if self.start < 0:
+                raise ValueError(f'Cannot go below start time 0')
 
         if self.end is not None:
             self.end += offset
+            if self.end < 0:
+                raise ValueError(f'Cannot go below end time 0')
 
     def hex_color(self):
         return rgb_to_hex(self.__color[0], self.__color[1], self.__color[2])

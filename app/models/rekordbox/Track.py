@@ -21,6 +21,7 @@ class Track:
         music_file.dateAdded = datetime.strptime(self.__attr("DateAdded"), '%Y-%m-%d')
         music_file.playCount = int(self.__attr("PlayCount"))
         music_file.tonality = self.__attr("Tonality")
+        music_file.totalTime = self.__attr("TotalTime")
 
         for hot_cue in self.__hot_cues():
             music_file.add_hot_cue(hot_cue)

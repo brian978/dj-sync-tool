@@ -13,6 +13,7 @@ class MusicFile:
         self.dateAdded = ''
         self.playCount = ''
         self.tonality = ''
+        self.totalTime = ''
 
         self.offset = 0
         self.beatgrid = []
