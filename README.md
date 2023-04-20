@@ -15,19 +15,26 @@ for my own personal use, so I am testing it, however there might be cases that I
 6. Run `make`
 
 # What it does
-The application will copy the CUE and LOOPS from Rekordbox to Serato.
+The application will copy the CUE and LOOPS from Rekordbox v6 to Serato v3.
+Probably will work with older versions of the software, but I have not tested and I never will.
 
 To prevent doing too much, it's restricted (for now) to only 1 playlist, so you will need to create a playlist with the
 tracks that you want to have synced, and then you will need to select the playlist from the CLI prompt when it is asked for.
 
 ### How it does it:
-* CUE points will be overwritten if they are on the same position as in RB:
+* _HOT CUE_ points will be overwritten if they are on the same position as in RB:
   * if you have a CUE on position 1 in RB as well as in Serato, it will be overwritten in Serato
   * if you have a CUE on position 1 in RB but not in Serato, it will be created in Serato
   * if you have a CUE on position 1 in RB, a CUE on position 2 in Serato, you will get 2 CUE points: pos 1 from RB and pos 2 will be preserved
-* LOOPS points will be overwritten if they are on the same position as in RB:
+
+* _LOOPS_ points will be overwritten if they are on the same position as in RB:
   * if the LOOP is LOCKED in Serato, it _will not be overwritten_ (not even the name)
   * it will be created if the loop does not exist in the given position
+
+* _MEMORY_ cues will be copied to Serato in the empty cue point locations
+  * all the memory cues will be prefixed with `M: ` (notice the "space" after ":") and they will either have the name or a number
+  * IF you have 5 *HOT CUE*s and 5 _MEMORY_ cues, only the first 3 memory cues will be synced as you can only have 8 *HOT CUE*s in Serato
+  * they will have a default color of RED because the XML does not contain color information for them
 
 For the application to properly set the CUEs and LOOPs ***it's very important*** to first have the beatgrid setup in Serato
 as the app will use the beatgrid information to calculate the offsets between the RB beatgrid and the Serato beatgrid.
@@ -35,7 +42,7 @@ as the app will use the beatgrid information to calculate the offsets between th
 **Actually** you don't even need to set the entire beatgrid for Serato. You **just need the first marker** to match the
 one from Rekordbox, as the software will use that one to calculate the offset.
 
-**NOTE:** if the HOT CUE or LOOP has a name, that will be copied over as well
+**NOTE:** if the HOT CUE, LOOP or MEMORY CUE has a name, it will be copied over as well
 
 ## License
 
