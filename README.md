@@ -10,8 +10,9 @@ for my own personal use, so I am testing it, however there might be cases that I
 1. Make sure you have Python 3.11 installed on your computer
 2. Export the rekordbox.xml file from Rekordbox, open the file `import.py` and replace `tests/fixtures/rekordbox.xml` with the path of your file.
 3. **MAKE A BACKUP OF YOUR MUSIC FILES**
-4. Run `make install`
-5. Run `make`
+4. Analyze your files in Serato and add the beatgrid marker labeled 1 at the same position as in Rekordbox
+5. Run `make install`
+6. Run `make`
 
 # What it does
 The application will copy the CUE and LOOPS from Rekordbox to Serato.
