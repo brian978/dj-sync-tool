@@ -44,7 +44,10 @@ one from Rekordbox, as the software will use that one to calculate the offset.
 
 **NOTE:** if the HOT CUE, LOOP or MEMORY CUE has a name, it will be copied over as well
 
-## License
+## IF you enjoy the software
+...it's useful to you and you feel that I earned it, feel free to [buy me a coffee](https://www.buymeacoffee.com/qj2rcyvc5wM) as I really enjoy them (for real...not just saying it for donations 😅).
+
+# License
 
 As example file I used [Perséphone - Retro Funky (SUNDANCE remix)](https://soundcloud.com/sundancemusic/pers-phone-retro-funky), 
 which is licensed under the term of the [Creative Commons Attribution 3.0 Unported (CC BY 3.0) license](https://creativecommons.org/licenses/by/3.0/).
