@@ -104,8 +104,9 @@ class Track:
     def __assign_memory_cues(self, file: MusicFile):
         unassigned_indexes = self.__unassigned_indexes(file.hot_cues)
         for hot_cue in file.hot_cues:
+            if len(unassigned_indexes) == 0:
+                break
+
             if hot_cue.index < 0:
                 hot_cue.index = unassigned_indexes.pop()
                 hot_cue.name = f'M: {(hot_cue.name if len(hot_cue.name) > 0 else hot_cue.index)}'
-                if len(unassigned_indexes) == 0:
-                    break
