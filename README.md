@@ -16,6 +16,9 @@ for my own personal use, so I am testing it, however there might be cases that I
 # What it does
 The application will copy the CUE and LOOPS from Rekordbox to Serato.
 
+To prevent doing too much, it's restricted (for now) to only 1 playlist, so you will need to create a playlist with the
+tracks that you want to have synced, and then you will need to select the playlist from the CLI prompt when it is asked for.
+
 ### How it does it:
 * CUE points will be overwritten if they are on the same position as in RB:
   * if you have a CUE on position 1 in RB as well as in Serato, it will be overwritten in Serato
@@ -28,8 +31,8 @@ The application will copy the CUE and LOOPS from Rekordbox to Serato.
 For the application to properly set the CUEs and LOOPs ***it's very important*** to first have the beatgrid setup in Serato
 as the app will use the beatgrid information to calculate the offsets between the RB beatgrid and the Serato beatgrid.
 
-**Actually** you don't even need to set the entire beatgrid for Serato **just the first marker**, as the software will use
-that one to calculate the offset.
+**Actually** you don't even need to set the entire beatgrid for Serato. You **just need the first marker** to match the
+one from Rekordbox, as the software will use that one to calculate the offset.
 
 ## License
 
