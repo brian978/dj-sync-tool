@@ -18,7 +18,7 @@ class TypeMap:
     @classmethod
     def from_rb(cls, cue_type: PositionMarkType):
         match cue_type:
-            case PositionMarkType.CUE:
+            case PositionMarkType.CUE | PositionMarkType.MEMORY:
                 return HotCueType.CUE
 
             case PositionMarkType.LOOP:
