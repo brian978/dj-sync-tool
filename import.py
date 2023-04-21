@@ -1,12 +1,19 @@
+import logging
+import sys
+
 from app.readers.rekordbox.PlaylistReader import PlaylistReader
 from app.readers.rekordbox.TrackReader import TrackReader
 from app.services.FileManagerService import FileManagerService
 from app.services.beatgrid.serato.BeatgridExtractorService import BeatgridExtractorService
 from app.services.marker.serato.MarkerExtractorService import MarkerExtractorService
-from app.services.marker.serato.v2.MarkerExtractorService import MarkerExtractorService as MarkerExtractorServiceV2
 from app.services.marker.serato.MarkerWriterService import MarkerWriterService
+from app.services.marker.serato.v2.MarkerExtractorService import MarkerExtractorService as MarkerExtractorServiceV2
 from app.services.marker.serato.v2.MarkerWriterService import MarkerWriterService as MarkerWriterServiceV2
 from app.utils.prompt import pick_playlist
+
+base_logger = logging.getLogger('app')
+base_logger.setLevel(logging.INFO)
+base_logger.addHandler(logging.StreamHandler(sys.stdout))
 
 xml_file = 'tests/fixtures/rekordbox.xml'
 
@@ -32,3 +39,5 @@ file_manager.add_writer(MarkerWriterServiceV2())
 
 # Save to files
 file_manager.write_tags(file_manager.extract_tags())
+
+logging.shutdown()

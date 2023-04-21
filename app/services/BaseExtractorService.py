@@ -1,7 +1,8 @@
 from app.models.MusicFile import MusicFile
+from app.services.Service import Service
 
 
-class BaseExtractorService:
+class BaseExtractorService(Service):
     FMT_VERSION = 'BB'
 
     def source_name(self):

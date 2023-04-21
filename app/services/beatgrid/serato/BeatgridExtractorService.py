@@ -32,9 +32,22 @@ class BeatgridExtractorService(BaseExtractorService):
 
         To calculate the correct offset we need to look for the closest cue or loop to Serato first beat
         """
-        serato_start = data[0].position
+        self._logger().debug('')
+        self._logger().debug('------------------------- START OFFSET -------------------------')
+        self._logger().debug(f'Calculating offset for file: {file.location}')
+
+        # Sometimes Serato reports start position under 0, where EVENT IT cannot place a HOT CUE
+        # in which case we will assume it starts at 0
+        serato_start = 0 if data[0].position < 0 else data[0].position
         master_start = self.__calculate_bars(file, serato_start)
         offset = int(round(serato_start - master_start, 3) * 1000)
+
+        self._logger().debug(f'Serato start: {serato_start}')
+        self._logger().debug(f'Rekordbox first bar: {file.beatgrid[0].position}')
+        self._logger().debug(f'Rekordbox calculated first bar: {master_start}')
+        self._logger().debug(f'Using offset {offset}')
+        self._logger().debug('------------------------- END OFFSET -------------------------')
+        self._logger().debug('')
 
         file.offset = offset
         file.apply_beatgrid_offset(offset)
