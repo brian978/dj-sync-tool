@@ -14,6 +14,17 @@ for my own personal use, so I am testing it, however there might be cases that I
 5. Run `make install`
 6. Run `make`
 
+#### If using Windows
+In this case the `make` commands will probably not work for you, but you can just write the normal commands:
+Instead of `make install` you can do
+```
+python3.exe -m venv venv
+venv/bin/pip3.exe install -r requirements.txt
+```
+and instead of `make` you have `venv/bin/python3.exe import.py`
+
+I don't have access to a Windows machine, at the time of the writing, so you may need to adjust the executable path or maybe remove the `.exe` extension when running the commands.
+
 # What it does
 The application will copy the CUE and LOOPS from Rekordbox v6 to Serato v3.
 Probably will work with older versions of the software, but I have not tested and I never will.
