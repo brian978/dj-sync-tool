@@ -25,12 +25,12 @@ class MarkerWriterService(BaseWriterService):
             """
             entries = self._create_empty_entries()
 
-        self.write_hot_cues(file.hot_cues.copy(), entries)
-        self.write_cue_loops(file.cue_loops.copy(), entries)
+        self._write_hot_cues(file.hot_cues.copy(), entries)
+        self._write_cue_loops(file.cue_loops.copy(), entries)
         self.__save(file, entries)
 
     @staticmethod
-    def write_hot_cues(hot_cues: list, entries: list) -> None:
+    def _write_hot_cues(hot_cues: list, entries: list) -> None:
         """
         We need to update the hot cues for the first 5 Entries (0 to 4)
         """
@@ -46,7 +46,8 @@ class MarkerWriterService(BaseWriterService):
 
                 entry.set_hot_cue(hot_cue.start, hot_cue.hex_color())
 
-    def write_cue_loops(self, cue_loops: list, entries: list) -> None:
+    @staticmethod
+    def _write_cue_loops(cue_loops: list, entries: list) -> None:
         """
         Loops will be created on the next 5 (05 - 13)
         """
@@ -86,10 +87,8 @@ class MarkerWriterService(BaseWriterService):
         if decoder is None:
             return
 
-        print(f"Dumping {self.source_name()} for file {file.location}")
-        mutagenFile = decoder.encode(music_file=file, entries=entries)
-        # pass
-        mutagenFile.save(file.location)
+        self._logger().info(f"Dumping {self.source_name()} for file {file.location}")
+        decoder.encode(music_file=file, entries=entries).save(file.location)
 
     def __save(self, file: MusicFile, entries: list):
         self.__write_tag(file, list(self.__serialize(entries)))

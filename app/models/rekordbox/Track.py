@@ -22,10 +22,8 @@ class Track:
         music_file.tonality = self.__attr("Tonality")
         music_file.totalTime = self.__attr("TotalTime")
 
-        for hot_cue in self.__hot_cues():
+        for hot_cue in self.__index_memory_cues(self.__hot_cues()):
             music_file.add_hot_cue(hot_cue)
-
-        self.__assign_memory_cues(music_file)
 
         for tempo in self.__beatgrid():
             music_file.add_beatgrid_marker(tempo)
@@ -36,6 +34,7 @@ class Track:
         return self.__track.attributes[name].value
 
     def __hot_cues(self):
+        hot_cues = []
         for node in self.__track.childNodes:
             if not isinstance(node, Element) or node.nodeName != 'POSITION_MARK':
                 continue
@@ -56,7 +55,9 @@ class Track:
             if cue_type == PositionMarkType.LOOP:
                 hot_cue.end = int(float(node.attributes["End"].value) * 1000)  # need value in milliseconds
 
-            yield hot_cue
+            hot_cues.append(hot_cue)
+
+        return hot_cues
 
     def __beatgrid(self):
         for node in self.__track.childNodes:
@@ -101,12 +102,14 @@ class Track:
             int(xml_cue.attributes["Blue"].value)
         ]
 
-    def __assign_memory_cues(self, file: MusicFile):
-        unassigned_indexes = self.__unassigned_indexes(file.hot_cues)
-        for hot_cue in file.hot_cues:
+    def __index_memory_cues(self, hot_cues: list[HotCue]) -> list:
+        unassigned_indexes = self.__unassigned_indexes(hot_cues)
+        for hot_cue in hot_cues:
             if len(unassigned_indexes) == 0:
                 break
 
             if hot_cue.index < 0:
                 hot_cue.index = unassigned_indexes.pop()
                 hot_cue.name = f'M: {(hot_cue.name if len(hot_cue.name) > 0 else hot_cue.index)}'
+
+        return hot_cues

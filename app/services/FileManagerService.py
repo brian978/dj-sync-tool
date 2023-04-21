@@ -2,9 +2,10 @@ from app.models.MusicFile import MusicFile
 from app.readers.BaseReader import BaseReader
 from app.services.BaseExtractorService import BaseExtractorService
 from app.services.BaseWriterService import BaseWriterService
+from app.services.Service import Service
 
 
-class FileManagerService:
+class FileManagerService(Service):
     __extractors = []
     __writers = []
 

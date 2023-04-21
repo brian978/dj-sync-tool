@@ -3,6 +3,7 @@ import os
 from app.models.HotCue import HotCue
 from app.models.HotCueType import HotCueType
 from app.models.Tempo import Tempo
+from app.utils.prompt import CliColor, color_print
 
 
 class MusicFile:
@@ -42,8 +43,21 @@ class MusicFile:
         return self.__tag_data[source_name]
 
     def apply_beatgrid_offset(self, offset: int):
-        for hot_cue in self.hot_cues:
-            hot_cue.apply_offset(offset)
+        try:
+            for hot_cue in self.hot_cues:
+                hot_cue.apply_offset(offset)
 
-        for loop in self.cue_loops:
-            loop.apply_offset(offset)
+            for loop in self.cue_loops:
+                loop.apply_offset(offset)
+        except ValueError as e:
+            color_print(CliColor.FAIL, f'Track: {self.location} | Error: {e}')
+
+            # Revert the offset
+            for hot_cue in self.hot_cues:
+                hot_cue.apply_offset(-offset)
+
+            for loop in self.cue_loops:
+                loop.apply_offset(-offset)
+
+
+
