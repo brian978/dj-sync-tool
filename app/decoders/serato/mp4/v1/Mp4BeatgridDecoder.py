@@ -1,26 +1,10 @@
 import base64
-import collections
 
 # noinspection PyPep8Naming
 from mutagen.mp4 import MP4 as MutagenFile
 
 from app.decoders.serato.mp3.v1.Mp3BeatgridDecoder import Mp3BeatgridDecoder
 from app.utils.serato import join_string
-
-NonTerminalBeatgridMarker = collections.namedtuple(
-    'NonTerminalBeatgridMarker', (
-        'position',
-        'beats_till_next_marker',
-    )
-)
-TerminalBeatgridMarker = collections.namedtuple('TerminalBeatgridMarker', (
-    'position',
-    'bpm',
-))
-
-Footer = collections.namedtuple('Footer', (
-    'unknown',
-))
 
 
 class Mp4BeatgridDecoder(Mp3BeatgridDecoder):

@@ -5,9 +5,24 @@ class Tempo:
 
     def __repr__(self):
         return 'BPM: {bpm} starting @ {position}'.format(
-            position=self.__position,
-            bpm=str(self.__bpm).ljust(5)
+            bpm=str(self.__bpm).ljust(5),
+            position=self.__format_position()
         )
+
+    def __format_position(self):
+        if self.__position < 0:
+            return self.__position
+
+        # define the number of seconds
+        seconds = self.__position / 1000
+
+        # split into minutes, seconds, and milliseconds
+        minutes = int(seconds // 60)
+        remaining_seconds = int(seconds % 60)
+        milliseconds = int((seconds - int(seconds)) * 1000)
+
+        # print the result in "mm:ss.mmm" format
+        return f"{minutes:02d}:{remaining_seconds:02d}:{milliseconds:03d}"
 
     def set_position(self, value: float):
         # Starting positions for beat grids cannot be negative
