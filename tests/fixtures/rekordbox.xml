@@ -125,26 +125,7 @@
     <PLAYLISTS>
         <NODE Type="0" Name="ROOT" Count="11">
             <NODE Name="Some playlist" Type="1" KeyType="0" Entries="20">
-                <TRACK Key="209551696"/>
-                <TRACK Key="258273470"/>
-                <TRACK Key="73854379"/>
-                <TRACK Key="204971650"/>
-                <TRACK Key="17022599"/>
-                <TRACK Key="124825876"/>
-                <TRACK Key="1542985"/>
-                <TRACK Key="6891399"/>
-                <TRACK Key="30467126"/>
-                <TRACK Key="225139351"/>
-                <TRACK Key="14113229"/>
-                <TRACK Key="177680762"/>
-                <TRACK Key="238080095"/>
-                <TRACK Key="17370835"/>
-                <TRACK Key="107239495"/>
-                <TRACK Key="18329641"/>
-                <TRACK Key="167410182"/>
-                <TRACK Key="250440834"/>
-                <TRACK Key="21576124"/>
-                <TRACK Key="147654359"/>
+                <TRACK Key="112013117"/>
             </NODE>
         </NODE>
     </PLAYLISTS>
