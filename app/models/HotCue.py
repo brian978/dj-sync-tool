@@ -13,9 +13,9 @@ class HotCue:
         self.__color: list[int] = []
 
     def __repr__(self):
-        return '{index}) Name: `{name}` | Start: {start}{end}'.format(
-            name=self.name.ljust(20) if len(self.name) > 0 else self.name,
-            index=self.index,
+        return 'Start: {start}{end} | Index: {index} | Name: `{name}`'.format(
+            name=self.name if len(self.name) > 0 else self.name,
+            index=str(f'{self.index}').rjust(2),
             start=str(f'{self.start}ms').ljust(10),
             end=str(f' | End: {self.end}ms').ljust(10) if self.end is not None else ''
         )
