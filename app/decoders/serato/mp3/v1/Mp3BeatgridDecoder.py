@@ -1,4 +1,3 @@
-import collections
 import struct
 from io import BytesIO
 
@@ -9,28 +8,13 @@ from app.decoders.serato.BaseDecoder import BaseDecoder
 from app.models.MusicFile import MusicFile
 from app.models.serato.BpmMarkerModel import BpmMarkerModel
 
-NonTerminalBeatgridMarker = collections.namedtuple(
-    'NonTerminalBeatgridMarker', (
-        'position',
-        'beats_till_next_marker',
-    )
-)
-TerminalBeatgridMarker = collections.namedtuple('TerminalBeatgridMarker', (
-    'position',
-    'bpm',
-))
-
-Footer = collections.namedtuple('Footer', (
-    'unknown',
-))
-
 
 class Mp3BeatgridDecoder(BaseDecoder):
     TAG_NAME = 'GEOB:Serato BeatGrid'
     TAG_VERSION = b'\x01\x00'
     MARKERS_NAME = 'Serato BeatGrid'
 
-    def decode(self, music_file: MusicFile) -> list:
+    def decode(self, music_file: MusicFile) -> list[BpmMarkerModel]:
         filepath = music_file.location
         data = self._read_data_from_tags(filepath)
 
@@ -64,7 +48,7 @@ class Mp3BeatgridDecoder(BaseDecoder):
                 yield BpmMarkerModel(position, bpm)
             else:
                 beats_till_next_marker = struct.unpack('>I', data)[0]
-                yield NonTerminalBeatgridMarker(position, beats_till_next_marker)
+                yield BpmMarkerModel(position, 0, beats_till_next_marker)
 
         # # What's the meaning of the footer byte?
         # yield Footer(struct.unpack('B', fp.read(1))[0])

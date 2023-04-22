@@ -2,8 +2,12 @@ import math
 
 from app.factories.serato.DecoderFactory import DecoderFactory
 from app.models.MusicFile import MusicFile
+from app.models.Offset import Offset
+from app.models.Tempo import Tempo
+from app.models.serato.BpmMarkerModel import BpmMarkerModel
 from app.services.BaseExtractorService import BaseExtractorService
 from app.utils import finder
+from app.utils.serato import calculate_bpm
 
 
 class BeatgridExtractorService(BaseExtractorService):
@@ -22,49 +26,94 @@ class BeatgridExtractorService(BaseExtractorService):
         data = decoder.decode(file)
 
         if len(data):
+            self.__calculate_bpm_values(data)
             self.__calculate_offsets(data, file)
 
         return data
 
-    def __calculate_offsets(self, data: list, file: MusicFile):
+    def __calculate_offsets(self, data: list[BpmMarkerModel], file: MusicFile):
         """
         For now, we assume that we only have fixed beat grids and not dynamic
 
         To calculate the correct offset we need to look for the closest cue or loop to Serato first beat
         """
+        master_tempo = file.beatgrid[0]
+        serato_tempo = data[0]
+
         self._logger().debug('')
-        self._logger().debug('------------------------- START OFFSET -------------------------')
-        self._logger().debug(f'Calculating offset for file: {file.location}')
+        self._logger().debug(f'------------------------- START OFFSET / TID: {file.trackID} -------------------------')
+        self._logger().debug(f'Calculating offset for file: {file.filename()}\n')
 
-        # Sometimes Serato reports start position under 0, where EVENT IT cannot place a HOT CUE
-        # in which case we will assume it starts at 0
-        serato_start = 0 if data[0].position < 0 else data[0].position
-        master_start = self.__calculate_bars(file, serato_start)
-        offset = int(round(serato_start - master_start, 3) * 1000)
+        # Debug beatgrid tempo markers
+        serato_bpm_list = ', '.join(str(marker) for marker in data)
+        self._logger().debug(f'{"Serato BPM markers:".rjust(22)} {serato_bpm_list}')
 
-        self._logger().debug(f'Serato start: {serato_start}')
-        self._logger().debug(f'Rekordbox first bar: {file.beatgrid[0].position}')
-        self._logger().debug(f'Rekordbox calculated first bar: {master_start}')
-        self._logger().debug(f'Using offset {offset}')
-        self._logger().debug('------------------------- END OFFSET -------------------------')
+        master_bpm_list = ', '.join(str(marker) for marker in file.beatgrid)
+        self._logger().debug(f'Rekordbox BPM markers: {master_bpm_list}')
+
+        self.__log_hot_cues(file)
+        self.__log_cue_loops(file)
+
+        self._logger().debug(f'Rekordbox first bar: {int(master_tempo.get_position())}ms')
+        self._logger().debug(f'{"Serato start:".rjust(20)} {int(serato_tempo.get_position())}ms')
+
+        # Calculating the beat grids so we can have the offsets
+        serato_beatgrid = self.__generate_beatgrid(file, serato_tempo)
+        master_beatgrid = self.__generate_beatgrid(file, master_tempo)
+
+        # Find and apply the offsets based on the bars
+        offsets = self.__find_offsets(serato_beatgrid, master_beatgrid)
+        file.apply_beatgrid_offsets(offsets)
+
+        self.__log_hot_cues(file)
+        self.__log_cue_loops(file)
+
+        self._logger().debug('------------------------- END OFFSET / TID: {file.trackID} -------------------------')
         self._logger().debug('')
-
-        file.offset = offset
-        file.apply_beatgrid_offset(offset)
 
         return
 
     @staticmethod
-    def __calculate_bars(file: MusicFile, position: int):
-        song_length = float(file.totalTime)  # Length of song in seconds
-        bpm = float(file.averageBpm)  # Tempo of song in beats per minute
-        first_beat = float(file.beatgrid[0].position)  # Location of first beat in seconds
-
-        # Calculate the length of each beat in seconds
-        beat_length = 60 / bpm
+    def __generate_beatgrid(file: MusicFile, tempo: Tempo):
+        song_length = file.totalTime
+        first_beat = tempo.get_position()
+        beat_length = tempo.get_beat_length()
 
         # Calculate the start times of the first 20 beats in seconds
         num_beats = math.ceil(song_length / beat_length)
-        beat_starts = [first_beat + i * beat_length for i in range(num_beats)]
+        return [first_beat + i * beat_length for i in range(num_beats)]
 
-        return finder.closest(position, beat_starts)
+    def __find_offsets(self, serato_beatgrid: list, master_beatgrid: list) -> list[Offset]:
+        offsets = []
+        for beat in serato_beatgrid:
+            closest_beat = finder.closest(beat, master_beatgrid)
+            offset = Offset(closest_beat, beat)
+
+            offsets.append(offset)
+
+        list_offsets = '; '.join(set(str(f'{offset.get_value()}ms') for offset in offsets))
+        self._logger().debug(f'{"Offsets:".rjust(20)} {list_offsets}')
+
+        return offsets
+
+    def __log_hot_cues(self, file: MusicFile):
+        if len(file.hot_cues) == 0:
+            return
+
+        hot_cues = '\n'.join(str(cue) for cue in file.hot_cues)
+        self._logger().debug(f'\nHot cues:\n{hot_cues}\n')
+
+    def __log_cue_loops(self, file: MusicFile):
+        if len(file.cue_loops) == 0:
+            return
+
+        cues = '\n'.join(str(cue) for cue in file.cue_loops)
+        self._logger().debug(f'\nLoop cues:\n{cues}\n')
+
+    @staticmethod
+    def __calculate_bpm_values(data: list[BpmMarkerModel]):
+        for idx, bpm_marker in enumerate(data):
+            if bpm_marker.get_bpm() == 0:
+                next_marker = data[idx + 1]
+                bpm = calculate_bpm(bpm_marker, next_marker)
+                bpm_marker.set_bpm(bpm)

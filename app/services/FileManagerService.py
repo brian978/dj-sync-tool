@@ -1,3 +1,5 @@
+from progress.bar import Bar
+
 from app.models.MusicFile import MusicFile
 from app.readers.BaseReader import BaseReader
 from app.services.BaseExtractorService import BaseExtractorService
@@ -20,19 +22,25 @@ class FileManagerService(Service):
 
     def extract_tags(self):
         files = self.__reader.read()
-        for file in files:
-            assert isinstance(file, MusicFile)
+        with Bar('Reading tags', max=len(files)) as bar:
+            for file in files:
+                assert isinstance(file, MusicFile)
+                bar.next()
 
-            # extract tags from the files
-            for extractor in self.__extractors:
-                assert isinstance(extractor, BaseExtractorService)
-                file.add_tag_data(extractor.source_name(), extractor.execute(file))
+                # extract tags from the files
+                for extractor in self.__extractors:
+                    assert isinstance(extractor, BaseExtractorService)
+                    file.add_tag_data(extractor.source_name(), extractor.execute(file))
 
         return files
 
     def write_tags(self, files: list):
-        for file in files:
-            assert isinstance(file, MusicFile)
-            for writer in self.__writers:
-                assert isinstance(writer, BaseWriterService)
-                writer.execute(file)
+        with Bar('Writing tags', max=len(files)) as bar:
+            for file in files:
+                assert isinstance(file, MusicFile)
+                bar.next()
+
+                self._logger().info(f'Writing tags for file: {file.filename()}')
+                for writer in self.__writers:
+                    assert isinstance(writer, BaseWriterService)
+                    writer.execute(file)

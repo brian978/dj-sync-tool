@@ -100,7 +100,7 @@ class MarkerWriterService(BaseWriterService):
         if decoder is None:
             return
 
-        self._logger().info(f"Dumping {self.source_name()} for file {file.location}")
+        # self._logger().debug(f"Dumping {self.source_name()} for file {file.location}")
         decoder.encode(music_file=file, entries=entries).save(file.location)
 
     def __save(self, file: MusicFile, entries: list):
