@@ -7,6 +7,7 @@ from app.models.Tempo import Tempo
 from app.models.serato.BpmMarkerModel import BpmMarkerModel
 from app.services.BaseExtractorService import BaseExtractorService
 from app.utils import finder
+from app.utils.serato import calculate_bpm
 
 
 class BeatgridExtractorService(BaseExtractorService):
@@ -25,6 +26,7 @@ class BeatgridExtractorService(BaseExtractorService):
         data = decoder.decode(file)
 
         if len(data):
+            self.__calculate_bpm_values(data)
             self.__calculate_offsets(data, file)
 
         return data
@@ -107,3 +109,11 @@ class BeatgridExtractorService(BaseExtractorService):
 
         cues = '\n'.join(str(cue) for cue in file.cue_loops)
         self._logger().debug(f'\nLoop cues:\n{cues}\n')
+
+    @staticmethod
+    def __calculate_bpm_values(data: list[BpmMarkerModel]):
+        for idx, bpm_marker in enumerate(data):
+            if bpm_marker.get_bpm() == 0:
+                next_marker = data[idx + 1]
+                bpm = calculate_bpm(bpm_marker, next_marker)
+                bpm_marker.set_bpm(bpm)
