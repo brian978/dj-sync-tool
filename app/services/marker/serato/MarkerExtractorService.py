@@ -10,7 +10,7 @@ from app.serializers.serato.ColorSerializer import ColorSerializer
 from app.serializers.serato.EntrySerializer import EntrySerializer
 from app.services.BaseExtractorService import BaseExtractorService
 from app.utils.colors import rgb_to_hex
-from app.utils.prompt import color_print, CliColor
+from app.utils.prompt import CliColor, color_msg
 
 
 class MarkerExtractorService(BaseExtractorService):
@@ -32,7 +32,9 @@ class MarkerExtractorService(BaseExtractorService):
         decoder = DecoderFactory.marker_decoder(file, 'v1')
 
         if decoder is None:
-            color_print(CliColor.FAIL, f"Marker v1 extraction for file: {file.location} is not supported!")
+            self._logger().warning(color_msg(
+                CliColor.WARNING, f"Marker v1 extraction for file: {file.location} is not supported!"
+            ))
             return entries
 
         data = decoder.decode(music_file=file)
