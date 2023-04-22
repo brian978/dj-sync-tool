@@ -42,7 +42,7 @@ class BeatgridExtractorService(BaseExtractorService):
 
         self._logger().debug('')
         self._logger().debug(f'------------------------- START OFFSET / TID: {file.trackID} -------------------------')
-        self._logger().debug(f'Calculating offset for file: {file.location}\n')
+        self._logger().debug(f'Calculating offset for file: {file.filename()}\n')
 
         # Debug beatgrid tempo markers
         serato_bpm_list = ', '.join(str(marker) for marker in data)
@@ -54,8 +54,8 @@ class BeatgridExtractorService(BaseExtractorService):
         self.__log_hot_cues(file)
         self.__log_cue_loops(file)
 
-        self._logger().debug(f'Rekordbox first bar: {master_tempo.get_position()}s')
-        self._logger().debug(f'{"Serato start:".rjust(20)} {serato_tempo.get_position()}s')
+        self._logger().debug(f'Rekordbox first bar: {int(master_tempo.get_position())}ms')
+        self._logger().debug(f'{"Serato start:".rjust(20)} {int(serato_tempo.get_position())}ms')
 
         # Calculating the beat grids so we can have the offsets
         serato_beatgrid = self.__generate_beatgrid(file, serato_tempo)

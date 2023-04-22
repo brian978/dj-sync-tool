@@ -32,23 +32,23 @@ class HotCue:
 
         self.__update_positions(int(self.offset.get_value()))
 
-    def revert_offset(self):
-        if self.offset is None:
-            return
-
-        self.__update_positions(-int(self.offset.get_value()))
-
     def __update_positions(self, offset: int):
         if self.start is not None:
+            old_start = self.start
             self.start += offset
             if self.start < 0:
-                raise self.__value_error('Start time', self.start)
+                err = self.__value_error('Start time', self.start, old_start)
+                self.start = old_start
+                raise err
 
         if self.end is not None:
+            old_end = self.end
             self.end += offset
             if self.end < 0:
-                raise self.__value_error('End time', self.end)
+                err = self.__value_error('End time', self.end, old_end)
+                self.end = old_end
+                raise err
 
     @staticmethod
-    def __value_error(offset_name, offset):
-        return ValueError(f'{offset_name} cannot go below 0. Time: {offset}')
+    def __value_error(offset_name, new_pos, old_pos):
+        return ValueError(f'{offset_name} cannot go below 0. New position: {new_pos}, old position: {old_pos}')

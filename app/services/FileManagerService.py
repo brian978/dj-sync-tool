@@ -33,6 +33,7 @@ class FileManagerService(Service):
     def write_tags(self, files: list):
         for file in files:
             assert isinstance(file, MusicFile)
+            self._logger().info(f'Writing tags for file: {file.filename()}')
             for writer in self.__writers:
                 assert isinstance(writer, BaseWriterService)
                 writer.execute(file)

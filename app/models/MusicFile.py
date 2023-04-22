@@ -1,3 +1,4 @@
+import logging
 import os
 
 from app.models.HotCue import HotCue
@@ -5,7 +6,7 @@ from app.models.HotCueType import HotCueType
 from app.models.Offset import Offset
 from app.models.Tempo import Tempo
 from app.utils import finder
-from app.utils.prompt import CliColor, color_print
+from app.utils.prompt import CliColor, color_msg
 
 
 class MusicFile:
@@ -26,6 +27,13 @@ class MusicFile:
 
         # Markers are the actual extracted data from Serato tags
         self.__tag_data = {}
+
+    def filename(self):
+        return os.path.basename(self.location)
+
+    @staticmethod
+    def _logger() -> logging.Logger:
+        return logging.getLogger(__name__)
 
     def add_beatgrid_marker(self, tempo: Tempo):
         self.beatgrid.append(tempo)
@@ -53,11 +61,4 @@ class MusicFile:
                 loop.offset = finder.closest_offset(loop.start, offsets)
                 loop.apply_offset()
         except ValueError as e:
-            color_print(CliColor.FAIL, f'Track: {self.location} | Error: {e}')
-
-            # Revert the offset
-            for hot_cue in self.hot_cues:
-                hot_cue.revert_offset()
-
-            for loop in self.cue_loops:
-                loop.revert_offset()
+            self._logger().error(color_msg(CliColor.FAIL, f'Error: {e} | Track: {self.filename()}'))

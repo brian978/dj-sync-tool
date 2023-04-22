@@ -19,7 +19,11 @@ class CliColor(enum.StrEnum):
 
 
 def color_print(color: CliColor, message: str):
-    print(color + message + CliColor.RESET)
+    print(color_msg(color, message))
+
+
+def color_msg(color: CliColor, message: str):
+    return color + message + CliColor.RESET
 
 
 def pick_playlist(options: list[PlaylistModel]):
