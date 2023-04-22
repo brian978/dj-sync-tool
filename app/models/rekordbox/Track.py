@@ -20,7 +20,7 @@ class Track:
         music_file.dateAdded = datetime.strptime(self.__attr("DateAdded"), '%Y-%m-%d')
         music_file.playCount = int(self.__attr("PlayCount"))
         music_file.tonality = self.__attr("Tonality")
-        music_file.totalTime = self.__attr("TotalTime")
+        music_file.totalTime = float(self.__attr("TotalTime")) * 1000
 
         for hot_cue in self.__index_memory_cues(self.__hot_cues()):
             music_file.add_hot_cue(hot_cue)
@@ -65,8 +65,8 @@ class Track:
                 continue
 
             tempo = Tempo()
-            tempo.position = node.attributes["Inizio"].value
-            tempo.bpm = node.attributes["Bpm"].value
+            tempo.set_position(float(node.attributes["Inizio"].value))
+            tempo.set_bpm(float(node.attributes["Bpm"].value))
 
             yield tempo
 

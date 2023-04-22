@@ -2,7 +2,9 @@ import os
 
 from app.models.HotCue import HotCue
 from app.models.HotCueType import HotCueType
+from app.models.Offset import Offset
 from app.models.Tempo import Tempo
+from app.utils import finder
 from app.utils.prompt import CliColor, color_print
 
 
@@ -10,14 +12,13 @@ class MusicFile:
     def __init__(self, path: str):
         self.location = os.path.abspath(path.replace('file://localhost', ''))
         self.trackID = ''
-        self.averageBpm = ''
+        self.averageBpm: float = 0.0
         self.dateAdded = ''
         self.playCount = ''
         self.tonality = ''
-        self.totalTime = ''
+        self.totalTime: float = 0.0
 
-        self.offset = 0
-        self.beatgrid = []
+        self.beatgrid: list[Tempo] = []
 
         # Data extracted from Rekordbox
         self.hot_cues: list[HotCue] = list()
@@ -42,22 +43,21 @@ class MusicFile:
     def get_tag_data(self, source_name: str):
         return self.__tag_data[source_name]
 
-    def apply_beatgrid_offset(self, offset: int):
+    def apply_beatgrid_offsets(self, offsets: list[Offset]):
         try:
             for hot_cue in self.hot_cues:
-                hot_cue.apply_offset(offset)
+                hot_cue.offset = finder.closest_offset(hot_cue.start, offsets)
+                hot_cue.apply_offset()
 
             for loop in self.cue_loops:
-                loop.apply_offset(offset)
+                loop.offset = finder.closest_offset(loop.start, offsets)
+                loop.apply_offset()
         except ValueError as e:
             color_print(CliColor.FAIL, f'Track: {self.location} | Error: {e}')
 
             # Revert the offset
             for hot_cue in self.hot_cues:
-                hot_cue.apply_offset(-offset)
+                hot_cue.revert_offset()
 
             for loop in self.cue_loops:
-                loop.apply_offset(-offset)
-
-
-
+                loop.revert_offset()
