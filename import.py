@@ -1,6 +1,9 @@
 import logging
+import os
 import sys
 from logging.handlers import MemoryHandler
+
+from dotenv import load_dotenv
 
 from app.readers.rekordbox.PlaylistReader import PlaylistReader
 from app.readers.rekordbox.TrackReader import TrackReader
@@ -12,14 +15,20 @@ from app.services.marker.serato.v2.MarkerExtractorService import MarkerExtractor
 from app.services.marker.serato.v2.MarkerWriterService import MarkerWriterService as MarkerWriterServiceV2
 from app.utils.prompt import pick_playlist
 
-memory_handler = MemoryHandler(10000, flushLevel=logging.CRITICAL, flushOnClose=True,
-                               target=logging.StreamHandler(sys.stdout))
+load_dotenv()
+
+memory_handler = MemoryHandler(
+    10000,
+    flushLevel=logging.CRITICAL,
+    flushOnClose=True,
+    target=logging.StreamHandler(sys.stdout)
+)
 
 base_logger = logging.getLogger('app')
 base_logger.setLevel(logging.WARNING)
 base_logger.addHandler(memory_handler)
 
-xml_file = 'tests/fixtures/rekordbox.xml'
+xml_file = os.getenv('RB_XML')
 
 # Playlist filter to allow for syncing only specific playlist
 playlist_reader = PlaylistReader(path=xml_file)
