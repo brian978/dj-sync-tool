@@ -8,11 +8,15 @@ for my own personal use, so I am testing it, however there might be cases that I
 
 # How to use
 1. Make sure you have Python 3.11 installed on your computer
-2. Export the rekordbox.xml file from Rekordbox, open the file `import.py` and replace `tests/fixtures/rekordbox.xml` with the path of your file.
-3. **MAKE A BACKUP OF YOUR MUSIC FILES**
-4. Analyze your files in Serato and add the beatgrid marker labeled 1 at the same position as in Rekordbox
-5. Run `make install`
-6. Run `make`
+2. Export the rekordbox.xml file from Rekordbox
+3. Rename the `.env.dist` file to `.env`
+4. Edit the `.env` file and the `RB_XML` directive to the place where your Rekordbox XML file is located (for Windows make sure it's the full path)
+   * For Windows make sure it's the full path
+   * For MacOS you can either use the full path or user the `~` sign to replace the `/Users/<your_username>` from the path
+5. **MAKE A BACKUP OF YOUR MUSIC FILES**
+6. Analyze your files in Serato and add the beatgrid marker labeled 1 at the same position as in Rekordbox
+7. Run `make install`
+8. Run `make`
 
 #### If using Windows
 In this case the `make` commands will probably not work for you, but you can just write the normal commands:
