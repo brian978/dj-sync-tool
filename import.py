@@ -13,9 +13,12 @@ from app.services.marker.serato.MarkerExtractorService import MarkerExtractorSer
 from app.services.marker.serato.MarkerWriterService import MarkerWriterService
 from app.services.marker.serato.v2.MarkerExtractorService import MarkerExtractorService as MarkerExtractorServiceV2
 from app.services.marker.serato.v2.MarkerWriterService import MarkerWriterService as MarkerWriterServiceV2
+from app.utils.convert import str2bool
 from app.utils.prompt import pick_playlist
 
 load_dotenv()
+
+log_level = os.getenv('LOGGING_LEVEL')
 
 memory_handler = MemoryHandler(
     10000,
@@ -25,8 +28,17 @@ memory_handler = MemoryHandler(
 )
 
 base_logger = logging.getLogger('app')
-base_logger.setLevel(logging.WARNING)
+base_logger.setLevel(log_level)
 base_logger.addHandler(memory_handler)
+
+# For debug level additionally write to log file
+if log_level == 'DEBUG':
+    base_logger.addHandler(logging.FileHandler('debug.log', mode='w'))
+
+# What it syncs
+tags_sync = str2bool(os.getenv('TAGS_SYNC'))
+beatgrid_sync = str2bool(os.getenv('BEATGRID_SYNC'))
+play_count_sync = str2bool(os.getenv('PLAY_COUNT_SYNC'))
 
 xml_file = os.getenv('RB_XML')
 
@@ -42,15 +54,26 @@ file_manager = FileManagerService(track_reader)
 # Serato Beatgrid -- extractor info is populated in order of registration
 file_manager.add_extractor(BeatgridExtractorService())
 
-# Serato Markers_
-file_manager.add_extractor(MarkerExtractorService())
-file_manager.add_writer(MarkerWriterService())
+if tags_sync:
+    # Serato Markers_
+    file_manager.add_extractor(MarkerExtractorService())
+    file_manager.add_writer(MarkerWriterService())
 
-# Serato Markers2
-file_manager.add_extractor(MarkerExtractorServiceV2())
-file_manager.add_writer(MarkerWriterServiceV2())
+    # Serato Markers2
+    file_manager.add_extractor(MarkerExtractorServiceV2())
+    file_manager.add_writer(MarkerWriterServiceV2())
 
-# Save to files
-file_manager.write_tags(file_manager.extract_tags())
+    # Save to files
+    file_manager.write_tags(file_manager.extract_tags())
+
+if beatgrid_sync:
+    # Feature not available yet (not sure that it will be ever but adding the placeholder for now)
+    pass
+
+if play_count_sync:
+    # Work in progress
+    pass
+
+base_logger.info('\n\nExecution completed!')
 
 logging.shutdown()

@@ -20,7 +20,6 @@ class TrackReader(BaseReader):
 
             files.append(Track(node).decode())
 
-        self._logger().info(f'')
         self._logger().info(f'Found {len(files)} tracks!')
         self._logger().info(f'--------------------------')
 
