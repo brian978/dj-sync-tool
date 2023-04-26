@@ -7,6 +7,7 @@ from app.models.MusicFile import MusicFile
 from app.models.Tempo import Tempo
 from app.models.rekordbox.PositionMarkType import PositionMarkType
 from app.models.rekordbox.TypeMap import TypeMap
+from app.utils.env import env
 
 
 class Track:
@@ -43,6 +44,9 @@ class Track:
             # hot cues with memory cues (if available)
             index = int(node.attributes["Num"].value)
             cue_type = self.__cue_type(index, node)
+
+            if env('MEMORY_CUES') == False and cue_type == PositionMarkType.MEMORY:
+                continue
 
             hot_cue = HotCue()
             hot_cue.type = TypeMap.from_rb(cue_type)

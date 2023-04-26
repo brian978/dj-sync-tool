@@ -13,7 +13,7 @@ from app.services.marker.serato.MarkerExtractorService import MarkerExtractorSer
 from app.services.marker.serato.MarkerWriterService import MarkerWriterService
 from app.services.marker.serato.v2.MarkerExtractorService import MarkerExtractorService as MarkerExtractorServiceV2
 from app.services.marker.serato.v2.MarkerWriterService import MarkerWriterService as MarkerWriterServiceV2
-from app.utils.convert import str2bool
+from app.utils.env import env
 from app.utils.prompt import pick_playlist
 
 load_dotenv()
@@ -36,9 +36,9 @@ if log_level == 'DEBUG':
     base_logger.addHandler(logging.FileHandler('debug.log', mode='w'))
 
 # What it syncs
-tags_sync = str2bool(os.getenv('TAGS_SYNC'))
-beatgrid_sync = str2bool(os.getenv('BEATGRID_SYNC'))
-play_count_sync = str2bool(os.getenv('PLAY_COUNT_SYNC'))
+tags_sync = env('TAGS_SYNC')
+beatgrid_sync = env('BEATGRID_SYNC')
+play_count_sync = env('PLAY_COUNT_SYNC')
 
 xml_file = os.getenv('RB_XML')
 
