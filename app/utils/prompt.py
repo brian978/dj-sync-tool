@@ -40,4 +40,4 @@ def pick_playlist(options: list[PlaylistModel]):
     except KeyError:
         print("Option is invalid")
 
-    return None
+    return PlaylistModel('Unknown playlist')
