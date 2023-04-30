@@ -1,3 +1,4 @@
+from app.models.serato.AbstractModel import AbstractModel
 from app.models.serato.EntryData import EntryData
 from app.models.serato.EntryModel import EntryModel
 from app.models.serato.EntryType import EntryType
@@ -21,7 +22,7 @@ class EntrySerializer(object):
         return model(*payload)
 
     @classmethod
-    def serialize(cls, model: EntryModel):
+    def serialize(cls, model: AbstractModel):
         entry = EntryData(model.model_type())
 
         for field in model.FIELDS:

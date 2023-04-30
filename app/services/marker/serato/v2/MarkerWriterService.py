@@ -2,12 +2,13 @@ from app.factories.serato.DecoderFactory import DecoderFactory
 from app.models.HotCue import HotCue
 from app.models.HotCueType import HotCueType
 from app.models.MusicFile import MusicFile
-from app.models.serato.EntryModel import EntryModel
 from app.models.serato.EntryType import EntryType
+from app.models.serato.LockableModel import LockableModel
 from app.models.serato.v2.BaseEntryModel import BaseEntryModel
 from app.models.serato.v2.BpmLockModel import BpmLockModel
 from app.models.serato.v2.ColorModel import ColorModel
 from app.models.serato.v2.CueModel import CueModel
+from app.models.serato.v2.HotCueAwareModel import HotCueAwareModel
 from app.models.serato.v2.LoopModel import LoopModel
 from app.serializers.serato.v2.BpmLockSerializer import BpmLockSerializer
 from app.serializers.serato.v2.ColorSerializer import ColorSerializer
@@ -100,7 +101,7 @@ class MarkerWriterService(BaseWriterService):
         if decoder is None:
             return
 
-        # self._logger().debug(f"Dumping {self.source_name()} for file {file.location}")
+        self._logger().debug(f"Dumping {self.source_name()} for file {file.location}")
         decoder.encode(music_file=file, entries=entries).save(file.location)
 
     def __save(self, file: MusicFile, entries: list):
@@ -109,7 +110,7 @@ class MarkerWriterService(BaseWriterService):
     @staticmethod
     def __serialize(entries: list):
         for entry_model in entries:
-            assert isinstance(entry_model, EntryModel)
+            assert isinstance(entry_model, BaseEntryModel)
             match entry_model.model_type():
                 case EntryType.CUE:
                     serializer = CueSerializer
@@ -141,7 +142,7 @@ class MarkerWriterService(BaseWriterService):
         return False
 
     @staticmethod
-    def __write_cue_name(model: type[BaseEntryModel], hot_cue: HotCue, entries: list, at_index: int):
+    def __write_cue_name(model: type[LockableModel, HotCueAwareModel], hot_cue: HotCue, entries: list, at_index: int):
         entry_found = False
         for entry in entries:
             if not isinstance(entry, model):
@@ -152,6 +153,9 @@ class MarkerWriterService(BaseWriterService):
                 continue
 
             entry_found = True
+            if not entry.is_writable():
+                continue
+
             entry.set_name(hot_cue.name)
             match hot_cue.type:
                 case HotCueType.CUE:

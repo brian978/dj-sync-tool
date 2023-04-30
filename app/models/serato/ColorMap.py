@@ -10,6 +10,7 @@ class ColorMap:
         "1FA392": "2BB673",
         "10B176": "8DC63F",
         "28E214": "1FAD26",
+        "3CEB50": "1FAD26",
         "A5E116": "4EB648",
         "B4BE04": "8DC63F",
         "C3AF04": "FAC313",

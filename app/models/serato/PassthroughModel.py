@@ -1,6 +1,5 @@
 import struct
 
-from app.models.HotCue import HotCue
 from app.models.serato.EntryType import EntryType
 
 
@@ -29,11 +28,6 @@ class PassthroughModel(object):
             name=self.__class__.__name__,
             data=', '.join('{}={!r}'.format(name, getattr(self, name)) for name in self.FIELDS)
         )
-
-    @classmethod
-    def from_hot_cue(cls, hot_cue: HotCue):
-        assert isinstance(hot_cue, HotCue)
-        raise NotImplementedError(f"Method not implemented in {cls}")
 
     def lock(self):
         pass

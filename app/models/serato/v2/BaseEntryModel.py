@@ -1,7 +1,7 @@
-from app.models.serato.EntryModel import EntryModel
+from app.models.serato.AbstractModel import AbstractModel
 
 
-class BaseEntryModel(EntryModel):
+class BaseEntryModel(AbstractModel):
     def set_hot_cue(self, position: int, color: str):
         raise NotImplementedError("The V2 markers do not support `set_hot_cue`")
 
@@ -9,12 +9,6 @@ class BaseEntryModel(EntryModel):
         raise NotImplementedError("The V2 markers do not support `set_cue_loop`")
 
     def set_name(self, name: str):
-        pass
-
-    def lock(self):
-        pass
-
-    def locked(self):
         pass
 
     def get_index(self):

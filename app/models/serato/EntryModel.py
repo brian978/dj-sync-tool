@@ -1,10 +1,11 @@
-from app.models.HotCue import HotCue
+from app.models.serato.AbstractModel import AbstractModel
 from app.models.serato.ColorMap import ColorMap
 from app.models.serato.EntryType import EntryType
+from app.models.serato.LockableModel import LockableModel
 
 
-class EntryModel(object):
-    FIELDS = (
+class EntryModel(AbstractModel, LockableModel):
+    FIELDS: tuple = (
         'start_position_set',
         'start_position',
         'end_position_set',
@@ -14,28 +15,6 @@ class EntryModel(object):
         'type',
         'is_locked'
     )
-
-    def __init__(self, *args):
-        assert len(args) == len(self.FIELDS)
-        for field, value in zip(self.FIELDS, args):
-            setattr(self, field, value)
-
-    def __repr__(self):
-        return '{name}({data})'.format(
-            name=self.__class__.__name__,
-            data=', '.join('{}={!r}'.format(name, getattr(self, name)) for name in self.FIELDS)
-        )
-
-    @classmethod
-    def from_hot_cue(cls, hot_cue: HotCue):
-        assert isinstance(hot_cue, HotCue)
-        raise NotImplementedError(f"Method not implemented in {cls}")
-
-    def get(self, item):
-        return getattr(self, item, None)
-
-    def model_type(self) -> EntryType:
-        return getattr(self, 'type', EntryType.INVALID)
 
     def set_hot_cue(self, position: int, color: str):
         if self.locked():
@@ -57,14 +36,5 @@ class EntryModel(object):
         setattr(self, 'type', EntryType.LOOP)
         setattr(self, 'color', bytes.fromhex("27AAE1"))
 
-    def lock(self):
-        setattr(self, 'is_locked', 1)
-
-    def unlock(self):
-        setattr(self, 'is_locked', 0)
-
-    def locked(self):
-        return getattr(self, 'is_locked') == 1
-
-    def is_empty(self):
-        return getattr(self, 'type') == EntryType.INVALID
+    def is_start_position_set(self):
+        return getattr(self, 'start_position_set') == True

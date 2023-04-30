@@ -2,10 +2,11 @@ import struct
 
 from app.models.HotCue import HotCue
 from app.models.serato.EntryType import EntryType
+from app.models.serato.LockableModel import LockableModel
 from app.models.serato.v2.BaseEntryModel import BaseEntryModel
 
 
-class LoopModel(BaseEntryModel):
+class LoopModel(BaseEntryModel, LockableModel):
     NAME = 'LOOP'
     FMT = '>cBII4s4sB?'
     FIELDS = ('index', 'start_position', 'end_position', 'color', 'is_locked', 'name', 'type')
@@ -18,7 +19,7 @@ class LoopModel(BaseEntryModel):
             hot_cue.index,
             hot_cue.start,
             hot_cue.end,
-            b'\xaa\xe1',
+            b'\xaa\xe1',  # Color
             False,
             hot_cue.name,
             EntryType.LOOP
@@ -37,14 +38,8 @@ class LoopModel(BaseEntryModel):
 
         setattr(self, 'name', name)
 
-    def lock(self):
-        setattr(self, 'is_locked', True)
-
-    def unlock(self):
-        setattr(self, 'is_locked', False)
-
-    def locked(self):
-        return getattr(self, 'is_locked', False) == True
+    def is_start_position_set(self):
+        return getattr(self, 'start_position') != 4294967295
 
     def dump(self):
         struct_fields = self.FIELDS[:-1]
