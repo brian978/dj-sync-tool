@@ -29,4 +29,5 @@ class TrackReader(BaseReader):
         return self.__playlist.has_track(int(node.attributes['TrackID'].value))
 
     def set_playlist(self, playlist: PlaylistModel):
+        self._logger().info(f'Using playlist: {playlist.name}')
         self.__playlist = playlist
