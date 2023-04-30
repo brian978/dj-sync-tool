@@ -3,10 +3,12 @@ import struct
 from app.models.HotCue import HotCue
 from app.models.serato.ColorMap import ColorMap
 from app.models.serato.EntryType import EntryType
+from app.models.serato.LockableModel import LockableModel
 from app.models.serato.v2.BaseEntryModel import BaseEntryModel
+from app.models.serato.v2.HotCueAwareModel import HotCueAwareModel
 
 
-class CueModel(BaseEntryModel):
+class CueModel(BaseEntryModel, LockableModel, HotCueAwareModel):
     NAME = 'CUE'
     FMT = '>cBIc3s2s'
     FIELDS = ('index', 'start_position', 'color', 'is_locked', 'name', 'type')
@@ -33,6 +35,9 @@ class CueModel(BaseEntryModel):
             return
 
         setattr(self, 'name', name)
+
+    def is_start_position_set(self):
+        return getattr(self, 'start_position') != 4294967295
 
     def dump(self):
         struct_fields = self.FIELDS[:-1]

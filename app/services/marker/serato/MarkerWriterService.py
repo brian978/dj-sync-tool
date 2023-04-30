@@ -30,14 +30,19 @@ class MarkerWriterService(BaseWriterService):
         self.__save(file, entries)
 
     @staticmethod
-    def _write_hot_cues(hot_cues: list, entries: list) -> None:
+    def _write_hot_cues(hot_cues: list, entries: list[EntryModel]) -> None:
         """
         We need to update the hot cues for the first 5 Entries (0 to 4)
         """
         for idx, entry in enumerate(entries):
-            assert isinstance(entry, EntryModel)
+            if entry.model_type() not in [EntryType.CUE, EntryType.INVALID]:
+                continue
+
             if idx > 4:
                 break
+
+            if not entry.is_writable():
+                continue
 
             for hot_cue in hot_cues:
                 assert isinstance(hot_cue, HotCue)
@@ -47,16 +52,22 @@ class MarkerWriterService(BaseWriterService):
                 entry.set_hot_cue(hot_cue.start, hot_cue.hex_color())
 
     @staticmethod
-    def _write_cue_loops(cue_loops: list, entries: list) -> None:
+    def _write_cue_loops(cue_loops: list, entries: list[EntryModel]) -> None:
         """
         Loops will be created on the next 5 (05 - 13)
         """
         cue_loops = sorted(cue_loops, key=lambda x: int(x.index))
         for idx, entry in enumerate(entries):
+            if entry.model_type() not in [EntryType.LOOP, EntryType.INVALID]:
+                continue
+
             if len(cue_loops) == 0:
                 break
 
             if idx < 5 or idx > 14:
+                continue
+
+            if not entry.is_writable():
                 continue
 
             offset_idx = idx - 5
@@ -87,7 +98,7 @@ class MarkerWriterService(BaseWriterService):
         if decoder is None:
             return
 
-        # self._logger().debug(f"Dumping {self.source_name()} for file {file.location}")
+        self._logger().debug(f"Dumping {self.source_name()} for file {file.location}")
         decoder.encode(music_file=file, entries=entries).save(file.location)
 
     def __save(self, file: MusicFile, entries: list):
