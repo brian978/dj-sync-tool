@@ -18,7 +18,12 @@ class TrackReader(BaseReader):
             if not isinstance(node, Element) or node.nodeName != 'TRACK' or not self.__allowed_track(node):
                 continue
 
-            files.append(Track(node).decode())
+            music_file = Track(node).decode()
+            if not music_file.is_file():
+                self._logger().warning(f'File {music_file.filename()} does not exists at path {music_file.location}')
+                continue
+
+            files.append(music_file)
 
         self._logger().info(f'Found {len(files)} tracks!')
         self._logger().info(f'--------------------------')

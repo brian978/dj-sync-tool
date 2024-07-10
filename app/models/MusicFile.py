@@ -28,6 +28,9 @@ class MusicFile:
         # Markers are the actual extracted data from Serato tags
         self.__tag_data = {}
 
+    def is_file(self) -> bool:
+        return os.path.isfile(self.location)
+
     def filename(self):
         return os.path.basename(self.location)
 
