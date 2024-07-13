@@ -15,6 +15,7 @@ from app.serializers.serato.v2.ColorSerializer import ColorSerializer
 from app.serializers.serato.v2.CueSerializer import CueSerializer
 from app.serializers.serato.v2.LoopSerializer import LoopSerializer
 from app.services.BaseWriterService import BaseWriterService
+from app.utils.env import env
 
 
 class MarkerWriterService(BaseWriterService):
@@ -81,10 +82,11 @@ class MarkerWriterService(BaseWriterService):
 
             self.__write_cue_name(LoopModel, hot_cue, entries, at_index)
 
-            # # Copy over the cue loop start to an empty hot cue (if any)
-            # if not self.__cue_exists(hot_cue.index, entries):
-            #     # Create new entry
-            #     entries.insert(at_index, CueModel.from_hot_cue(hot_cue))
+            # Copy over the cue loop start to an empty hot cue (if any)
+            if env('WRITE_LOOPS_AS_CUES') is True:
+                if not self.__cue_exists(hot_cue.index, entries):
+                    # Create new entry
+                    entries.insert(at_index, CueModel.from_hot_cue(hot_cue))
 
             at_index += 1  # move to next position
 
@@ -148,10 +150,13 @@ class MarkerWriterService(BaseWriterService):
             if not isinstance(entry, model):
                 continue
 
+            # Checks if there is already a cue present at the entry index
             idx = entry.get_index()
             if hot_cue.index != idx:
                 continue
 
+            # Signal that we found an entry at the given cue index
+            # IF it's not writable it will not be updated or added
             entry_found = True
             if not entry.is_writable():
                 continue

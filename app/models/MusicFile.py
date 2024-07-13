@@ -46,7 +46,7 @@ class MusicFile:
         if hot_cue.type == HotCueType.LOOP:
             self.cue_loops.insert(at_index, hot_cue)
         else:
-            self.hot_cues.insert(hot_cue.index, hot_cue)
+            self.hot_cues.insert(at_index, hot_cue)
 
     def add_tag_data(self, source_name: str, tags: list):
         self.__tag_data[source_name] = tags

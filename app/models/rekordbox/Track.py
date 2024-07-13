@@ -45,7 +45,7 @@ class Track:
             index = int(node.attributes["Num"].value)
             cue_type = self.__cue_type(index, node)
 
-            if env('MEMORY_CUES') == False and cue_type == PositionMarkType.MEMORY:
+            if env('MEMORY_CUES') is False and cue_type == PositionMarkType.MEMORY:
                 continue
 
             hot_cue = HotCue()
