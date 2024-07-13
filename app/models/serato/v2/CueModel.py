@@ -14,7 +14,7 @@ class CueModel(BaseEntryModel, LockableModel, HotCueAwareModel):
     FIELDS = ('index', 'start_position', 'color', 'is_locked', 'name', 'type')
 
     @classmethod
-    def from_hot_cue(cls, hot_cue: HotCue):
+    def from_hot_cue(cls, hot_cue: HotCue, name_prefix: str = ''):
         assert isinstance(hot_cue, HotCue)
 
         return cls(*[
@@ -22,7 +22,7 @@ class CueModel(BaseEntryModel, LockableModel, HotCueAwareModel):
             hot_cue.start,
             bytes.fromhex(ColorMap.to_serato(hot_cue.hex_color())),
             b'\x00',
-            hot_cue.name,
+            name_prefix + hot_cue.name,
             EntryType.CUE
         ])
 

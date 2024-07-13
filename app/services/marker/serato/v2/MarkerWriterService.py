@@ -86,7 +86,7 @@ class MarkerWriterService(BaseWriterService):
             if env('WRITE_LOOPS_AS_CUES') is True:
                 if not self.__cue_exists(hot_cue.index, entries):
                     # Create new entry
-                    entries.insert(at_index, CueModel.from_hot_cue(hot_cue))
+                    entries.insert(at_index, CueModel.from_hot_cue(hot_cue, name_prefix=f"L:{at_index} "))
 
             at_index += 1  # move to next position
 
