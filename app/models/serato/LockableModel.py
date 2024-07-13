@@ -19,7 +19,9 @@ class LockableModel(ABC):
         return getattr(self, 'is_locked') == 1
 
     def is_empty(self):
-        return getattr(self, 'type') == EntryType.INVALID or not self.is_start_position_set()
+        return (getattr(self, 'type') == EntryType.INVALID
+                or not self.is_start_position_set()
+                or getattr(self, 'name', '').startswith('DJCU'))
 
     def is_writable(self) -> bool:
         if not env('OVERWRITE_CUES'):

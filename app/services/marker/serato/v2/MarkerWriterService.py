@@ -138,7 +138,7 @@ class MarkerWriterService(BaseWriterService):
             if not isinstance(entry, CueModel):
                 continue
 
-            if entry.get_index() == position:
+            if entry.get_index() == position and not entry.get_name().startswith('DJCU'):
                 return True
 
         return False
