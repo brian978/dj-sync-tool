@@ -2,9 +2,9 @@
 The starting point of this project was the code from https://github.com/Holzhaus/serato-tags
 
 # Disclaimer
-This software is provided as-is without active support and without providing any warranty. If you decide to
-use it, make sure to back up your files as **I take no responsibility for any loss of data**. I built & use this software
-for my own personal use, so I am testing it, however there might be cases that I haven't covered with my testing.
+This software is provided “as is” without any warranties or guarantees of any kind. **By using this software, you acknowledge that you do so at your own risk.** 
+I strongly recommend backing up your files before using it, as I am not responsible for any loss or corruption of data. While I have tested this tool, 
+it is primarily developed for personal use, and certain scenarios may not have been thoroughly tested.
 
 # How to use
 1. Make sure you have Python 3.11 installed on your computer
